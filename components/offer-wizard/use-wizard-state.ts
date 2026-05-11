@@ -27,6 +27,7 @@ export function useWizardState() {
       if (raw) {
         const parsed = JSON.parse(raw) as PersistedState;
         if (parsed.step && STEP_ORDER.includes(parsed.step)) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect
           setStepInternal(parsed.step);
         }
         if (parsed.data) {
@@ -36,7 +37,6 @@ export function useWizardState() {
     } catch {
       // ignore — fresh start
     }
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHydrated(true);
   }, []);
 

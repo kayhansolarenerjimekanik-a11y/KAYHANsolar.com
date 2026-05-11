@@ -1,9 +1,10 @@
 "use client";
 
-import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { Menu, ShoppingCart, User, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+import { SearchTrigger } from "@/components/search/search-trigger";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
@@ -76,13 +77,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="Ara"
-            className="hidden h-9 w-9 place-items-center rounded-full border border-border text-muted hover:text-foreground md:grid"
-          >
-            <Search className="h-4 w-4" strokeWidth={2.2} />
-          </button>
+          <SearchTrigger />
 
           <div className="hidden md:block">
             <ThemeToggle />
