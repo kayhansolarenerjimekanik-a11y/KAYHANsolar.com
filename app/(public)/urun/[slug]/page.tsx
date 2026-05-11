@@ -9,11 +9,7 @@ import { ProductBadgeChip } from "@/components/shop/product-badge";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { StockStatus } from "@/components/shop/stock-status";
 import { Container } from "@/components/ui/container";
-import {
-  getCategoryById,
-  getProductBySlug,
-  mockProducts,
-} from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 
 interface ProductPageProps {
@@ -21,14 +17,15 @@ interface ProductPageProps {
 }
 
 export async function generateStaticParams() {
-  return mockProducts.map((p) => ({ slug: p.slug }));
+  const products = await repo.listProducts();
+  return products.map((p) => ({ slug: p.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await repo.getProductBySlug(slug);
   if (!product) return { title: "Ürün bulunamadı" };
   return {
     title: product.name,
@@ -38,10 +35,11 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await repo.getProductBySlug(slug);
   if (!product) notFound();
 
-  const category = getCategoryById(product.categoryId);
+  const categories = await repo.listCategories();
+  const category = categories.find((c) => c.id === product.categoryId);
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.currentPrice;
   const discountPercent = hasDiscount
@@ -52,7 +50,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       )
     : 0;
 
-  const related = mockProducts
+  const allProducts = await repo.listProducts();
+  const related = allProducts
     .filter(
       (p) =>
         p.id !== product.id &&

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 
 import { ShopView } from "@/components/shop/shop-view";
+import { repo } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Mağaza",
@@ -9,10 +10,14 @@ export const metadata: Metadata = {
     "Güneş panelleri, bataryalar, inverterler, aydınlatma ve paket sistemler.",
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const [products, categories] = await Promise.all([
+    repo.listProducts(),
+    repo.listCategories(),
+  ]);
   return (
     <Suspense fallback={<ShopFallback />}>
-      <ShopView />
+      <ShopView products={products} categories={categories} />
     </Suspense>
   );
 }

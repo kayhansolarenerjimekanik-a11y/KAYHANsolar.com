@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 
 import { Container } from "@/components/ui/container";
-import { mockGallery } from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Galeri ve Projeler",
@@ -11,7 +11,9 @@ export const metadata: Metadata = {
     "Tamamladığımız güneş enerjisi kurulumlarından örnekler ve referanslar.",
 };
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const posts = await repo.listGalleryPosts();
+
   return (
     <Container className="py-10 lg:py-14">
       <header className="flex flex-col gap-2 pb-10">
@@ -25,7 +27,7 @@ export default function GalleryPage() {
       </header>
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {mockGallery.map((post) => (
+        {posts.map((post) => (
           <article
             key={post.id}
             className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-1 hover:border-lime-primary hover:shadow-xl hover:shadow-lime-primary/10"

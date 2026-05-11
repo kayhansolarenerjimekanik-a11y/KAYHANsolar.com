@@ -2,7 +2,7 @@ import { ArrowRight, Battery, CircuitBoard, Lightbulb, Package, Sun } from "luci
 import Link from "next/link";
 
 import { Container } from "@/components/ui/container";
-import { mockCategories } from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 
 const categoryIcons: Record<string, React.ElementType> = {
   "cat-panel": Sun,
@@ -12,7 +12,9 @@ const categoryIcons: Record<string, React.ElementType> = {
   "cat-package": Package,
 };
 
-export function CategoryGrid() {
+export async function CategoryGrid() {
+  const categories = await repo.listCategories();
+
   return (
     <section className="border-t border-border">
       <Container className="py-20">
@@ -35,7 +37,7 @@ export function CategoryGrid() {
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {mockCategories.map((category) => {
+          {categories.map((category) => {
             const Icon = categoryIcons[category.id] ?? Sun;
             return (
               <Link

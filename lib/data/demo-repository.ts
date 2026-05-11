@@ -7,11 +7,8 @@ import type {
   GalleryPost,
   NotificationType,
   Offer,
-  OfferStatus,
   Order,
-  OrderStatus,
   Product,
-  SiteSettings,
 } from "./types";
 
 function genId(prefix: string): string {

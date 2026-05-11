@@ -138,7 +138,6 @@ const seedNotifications: AdminNotification[] = [
 // In serverless production with multiple instances, state isn't shared;
 // this is acceptable for demo mode and goes away when Supabase ships.
 declare global {
-  // eslint-disable-next-line no-var
   var __kayhanDemoStore: DemoStore | undefined;
 }
 

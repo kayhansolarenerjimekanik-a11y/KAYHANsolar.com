@@ -3,10 +3,11 @@ import Link from "next/link";
 
 import { ProductCard } from "@/components/shop/product-card";
 import { Container } from "@/components/ui/container";
-import { mockProducts } from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 
-export function FeaturedProducts() {
-  const featured = mockProducts.filter((p) => p.isFeatured).slice(0, 8);
+export async function FeaturedProducts() {
+  const all = await repo.listProducts();
+  const featured = all.filter((p) => p.isFeatured).slice(0, 8);
 
   return (
     <section className="border-t border-border">

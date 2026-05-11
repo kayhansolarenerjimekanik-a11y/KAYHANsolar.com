@@ -8,7 +8,7 @@ import { Filters, type FiltersState } from "@/components/shop/filters";
 import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { mockCategories, mockProducts } from "@/lib/mock/data";
+import type { Category, Product } from "@/types";
 
 type SortOption = "yeni" | "fiyat-artan" | "fiyat-azalan";
 
@@ -18,20 +18,25 @@ const sortLabels: Record<SortOption, string> = {
   "fiyat-azalan": "Fiyat: Azalan",
 };
 
-export function ShopView() {
+interface ShopViewProps {
+  products: Product[];
+  categories: Category[];
+}
+
+export function ShopView({ products, categories }: ShopViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   const allBrands = useMemo(
-    () => Array.from(new Set(mockProducts.map((p) => p.brand).filter(Boolean) as string[])).sort(),
-    [],
+    () => Array.from(new Set(products.map((p) => p.brand).filter(Boolean) as string[])).sort(),
+    [products],
   );
 
   const priceRange = useMemo<[number, number]>(() => {
-    const prices = mockProducts.map((p) => p.currentPrice);
+    const prices = products.map((p) => p.currentPrice);
     return [Math.min(...prices), Math.max(...prices)];
-  }, []);
+  }, [products]);
 
   const filters: FiltersState = useMemo(() => {
     const brandsParam = searchParams.get("markalar");
@@ -118,10 +123,10 @@ export function ShopView() {
   );
 
   const filtered = useMemo(() => {
-    let list = [...mockProducts];
+    let list = [...products];
 
     if (filters.categorySlug) {
-      const cat = mockCategories.find((c) => c.slug === filters.categorySlug);
+      const cat = categories.find((c) => c.slug === filters.categorySlug);
       if (cat) list = list.filter((p) => p.categoryId === cat.id);
     }
     if (filters.brands.length > 0) {
@@ -151,7 +156,7 @@ export function ShopView() {
     else list.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 
     return list;
-  }, [filters, query, sortBy]);
+  }, [filters, query, sortBy, products, categories]);
 
   useEffect(() => {
     document.body.style.overflow = mobileFiltersOpen ? "hidden" : "";
@@ -175,7 +180,7 @@ export function ShopView() {
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="hidden w-72 shrink-0 lg:block">
           <Filters
-            categories={mockCategories}
+            categories={categories}
             allBrands={allBrands}
             priceRange={priceRange}
             filters={filters}
@@ -272,7 +277,7 @@ export function ShopView() {
               </button>
             </div>
             <Filters
-              categories={mockCategories}
+              categories={categories}
               allBrands={allBrands}
               priceRange={priceRange}
               filters={filters}

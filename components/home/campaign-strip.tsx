@@ -2,10 +2,11 @@ import { ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 import { Container } from "@/components/ui/container";
-import { mockCampaigns } from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 
-export function CampaignStrip() {
-  const active = mockCampaigns.filter(
+export async function CampaignStrip() {
+  const all = await repo.listCampaigns();
+  const active = all.filter(
     (c) => c.isActive && c.displayOnHomepage,
   );
 

@@ -7,7 +7,7 @@ import {
   YoutubeIcon,
 } from "@/components/shared/social-icons";
 import { Container } from "@/components/ui/container";
-import { mockSiteSettings } from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 
 const footerLinks = {
   hizli: [
@@ -26,8 +26,8 @@ const footerLinks = {
   ],
 };
 
-export function Footer() {
-  const settings = mockSiteSettings;
+export async function Footer() {
+  const settings = await repo.getSettings();
 
   return (
     <footer className="mt-24 border-t border-border bg-surface">
