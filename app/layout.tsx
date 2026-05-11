@@ -2,8 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "sonner";
 
-import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
 import { CursorEffect } from "@/components/shared/cursor-effect";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 
@@ -30,21 +28,8 @@ export const metadata: Metadata = {
     template: "%s | KAYHAN Solar",
   },
   description:
-    "Güneş enerjisi sistemleri, paneller, inverterler, bataryalar ve aydınlatma çözümleri. Anahtar teslim kurulum ve ücretsiz teklif.",
-  keywords: [
-    "güneş enerjisi",
-    "solar panel",
-    "monokristal panel",
-    "inverter",
-    "lityum batarya",
-    "ges",
-    "kayhan solar",
-  ],
-  openGraph: {
-    type: "website",
-    locale: "tr_TR",
-    siteName: "KAYHAN Solar & Enerji",
-  },
+    "Güneş enerjisi sistemleri, paneller, inverterler, bataryalar ve aydınlatma çözümleri.",
+  openGraph: { type: "website", locale: "tr_TR", siteName: "KAYHAN Solar & Enerji" },
 };
 
 export const viewport: Viewport = {
@@ -73,17 +58,11 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <CursorEffect />
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          {children}
           <Toaster
             position="bottom-right"
             theme="system"
-            toastOptions={{
-              classNames: {
-                toast: "glass !rounded-xl",
-              },
-            }}
+            toastOptions={{ classNames: { toast: "glass !rounded-xl" } }}
           />
         </ThemeProvider>
       </body>
