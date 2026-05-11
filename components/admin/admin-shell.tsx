@@ -51,7 +51,11 @@ export function AdminShell({ email, unreadCount, children }: AdminShellProps) {
       )}
 
       <div className="flex min-h-dvh flex-1 flex-col">
-        <Topbar email={email} onToggleSidebar={() => setOpen((v) => !v)} />
+        <Topbar
+          email={email}
+          initialUnreadCount={unreadCount}
+          onToggleSidebar={() => setOpen((v) => !v)}
+        />
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
     </div>
