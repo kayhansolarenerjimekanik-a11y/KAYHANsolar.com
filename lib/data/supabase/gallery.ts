@@ -39,3 +39,60 @@ export async function getGalleryPostBySlug(slug: string): Promise<GalleryPost | 
   const media = (await fetchGalleryMedia([data.id])).get(data.id) ?? [];
   return rowToGallery(data, media);
 }
+
+export async function createGalleryPost(data: Omit<GalleryPost, "id">): Promise<GalleryPost> {
+  const { data: row, error } = await adminSupabase
+    .from("gallery_posts")
+    .insert(galleryToInsert(data))
+    .select()
+    .single();
+  if (error) throw error;
+  if (data.media.length > 0) {
+    const inserts = data.media.map((m, i) => ({
+      post_id: row.id,
+      media_type: m.type,
+      url: m.url,
+      thumbnail_url: m.thumbnailUrl ?? null,
+      display_order: i,
+    }));
+    await adminSupabase.from("gallery_media").insert(inserts);
+  }
+  const fresh = await getGalleryPostBySlug(data.slug);
+  return fresh!;
+}
+
+export async function updateGalleryPost(id: string, patch: Partial<GalleryPost>): Promise<GalleryPost> {
+  const update: Record<string, any> = {};
+  if (patch.slug !== undefined) update.slug = patch.slug;
+  if (patch.title !== undefined) update.title = patch.title;
+  if (patch.description !== undefined) update.description = patch.description;
+  if (patch.location !== undefined) update.location = patch.location;
+  if (patch.installationDate !== undefined) update.installation_date = patch.installationDate;
+  if (patch.systemPowerKw !== undefined) update.system_power_kw = patch.systemPowerKw;
+  if (patch.isFeatured !== undefined) update.is_featured = patch.isFeatured;
+  if (Object.keys(update).length > 0) {
+    const { error } = await adminSupabase.from("gallery_posts").update(update).eq("id", id);
+    if (error) throw error;
+  }
+  if (patch.media !== undefined) {
+    await adminSupabase.from("gallery_media").delete().eq("post_id", id);
+    if (patch.media.length > 0) {
+      const inserts = patch.media.map((m, i) => ({
+        post_id: id,
+        media_type: m.type,
+        url: m.url,
+        thumbnail_url: m.thumbnailUrl ?? null,
+        display_order: i,
+      }));
+      await adminSupabase.from("gallery_media").insert(inserts);
+    }
+  }
+  const { data: row } = await adminSupabase.from("gallery_posts").select("*").eq("id", id).single();
+  const mediaRows = await adminSupabase.from("gallery_media").select("*").eq("post_id", id).order("display_order");
+  return rowToGallery(row!, mediaRows.data ?? []);
+}
+
+export async function deleteGalleryPost(id: string): Promise<void> {
+  const { error } = await adminSupabase.from("gallery_posts").delete().eq("id", id);
+  if (error) throw error;
+}
