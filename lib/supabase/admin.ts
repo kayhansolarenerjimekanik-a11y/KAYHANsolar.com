@@ -18,3 +18,16 @@ export function getSupabaseAdminClient() {
   });
   return client;
 }
+
+// Convenience singleton used by data-layer modules.
+// Typed as `any` to avoid Supabase generic type inference issues when no DB schema is provided.
+// Service-role key bypasses RLS — only import from trusted server contexts.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const adminSupabase: any = new Proxy({} as any, {
+  get(_target, prop) {
+    const c = getSupabaseAdminClient();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const val = (c as any)[prop];
+    return typeof val === "function" ? val.bind(c) : val;
+  },
+});
