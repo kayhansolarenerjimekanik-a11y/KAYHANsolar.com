@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "sonner";
 
+import { ChatFab } from "@/components/ai/chat-fab";
 import { CursorEffect } from "@/components/shared/cursor-effect";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 
@@ -74,6 +75,7 @@ export default function RootLayout({
         >
           <CursorEffect />
           {children}
+          <ChatFab />
           <Toaster
             position="bottom-right"
             theme="system"
