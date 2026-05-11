@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "tsx --env-file=.env.local scripts/apply-migrations.ts",
-    "seed:ai": "tsx --env-file=.env.local scripts/seed-ai-knowledge.ts"
+    "seed:ai": "tsx --env-file=.env.local scripts/seed-ai-knowledge.ts",
+    "create:admin": "tsx --env-file=.env.local scripts/create-admin.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
