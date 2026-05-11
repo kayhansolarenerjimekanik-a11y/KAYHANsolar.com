@@ -1,11 +1,12 @@
 "use client";
 
-import { Bell, Minus, Plus, ShoppingCart } from "lucide-react";
+import { Bell, Mail, Minus, Plus, ShoppingCart } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { mockSiteSettings } from "@/lib/mock/data";
 import { buildQuickOrderLink } from "@/lib/whatsapp";
 import { useCart } from "@/store/cart";
@@ -42,13 +43,6 @@ export function AddToCart({ product }: AddToCartProps) {
     });
   };
 
-  const handleNotifyRequest = () => {
-    toast.success("Bilgilendirme talebiniz alındı", {
-      description:
-        "Demo modda — gerçek entegrasyon eklendiğinde e-posta veya bildirim alacaksınız.",
-    });
-  };
-
   const whatsappLink = buildQuickOrderLink(
     mockSiteSettings.whatsappNumber,
     product.name,
@@ -56,20 +50,7 @@ export function AddToCart({ product }: AddToCartProps) {
   );
 
   if (!inStock) {
-    return (
-      <div className="space-y-3 rounded-2xl border border-warning/30 bg-warning/5 p-4">
-        <p className="text-sm font-medium text-foreground">
-          Bu ürün şu anda tükenmiş durumda.
-        </p>
-        <p className="text-xs text-muted">
-          Stoklar yenilendiğinde size bildirim gönderelim mi?
-        </p>
-        <Button variant="primary" size="md" onClick={handleNotifyRequest}>
-          <Bell className="h-4 w-4" strokeWidth={2.4} />
-          Gelince Haber Ver
-        </Button>
-      </div>
-    );
+    return <NotifyWhenAvailable productId={product.id} productName={product.name} />;
   }
 
   return (
@@ -118,6 +99,91 @@ export function AddToCart({ product }: AddToCartProps) {
       <p className="text-xs text-muted">
         &quot;Hemen Satın Al&quot; WhatsApp üzerinden tamamlanır.
       </p>
+    </div>
+  );
+}
+
+function NotifyWhenAvailable({
+  productId,
+  productName,
+}: {
+  productId: string;
+  productName: string;
+}) {
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
+
+  function submit() {
+    setError(null);
+    const trimmed = email.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError("Geçerli bir e-posta adresi girin");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        const res = await fetch("/api/stock-notifications", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, email: trimmed }),
+        });
+        const data = (await res.json()) as { ok?: boolean; error?: string };
+        if (!res.ok || !data.ok) {
+          setError(data.error ?? "Gönderim başarısız");
+          return;
+        }
+        setSubmitted(true);
+        toast.success("Bildirim aboneliğiniz alındı", {
+          description: `${productName} stoğa girince size haber vereceğiz.`,
+        });
+      } catch {
+        setError("Bağlantı hatası — lütfen tekrar deneyin");
+      }
+    });
+  }
+
+  if (submitted) {
+    return (
+      <div className="space-y-2 rounded-2xl border border-success/30 bg-success/10 p-4 text-sm">
+        <p className="font-medium text-foreground">Aboneliğiniz kaydedildi.</p>
+        <p className="text-xs text-muted">
+          Ürün stoğa girdiğinde {email} adresine bildirim göndereceğiz.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 rounded-2xl border border-warning/30 bg-warning/5 p-4">
+      <p className="text-sm font-medium text-foreground">
+        Bu ürün şu anda tükenmiş durumda.
+      </p>
+      <p className="text-xs text-muted">
+        E-postanızı bırakın, stoğa girince size haber verelim.
+      </p>
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="relative flex-1">
+          <Mail
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted"
+            strokeWidth={2.2}
+          />
+          <Input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="ornek@eposta.com"
+            className="pl-10"
+            autoComplete="email"
+          />
+        </div>
+        <Button onClick={submit} disabled={pending}>
+          <Bell className="h-4 w-4" strokeWidth={2.4} />
+          {pending ? "Kaydediliyor..." : "Haber Ver"}
+        </Button>
+      </div>
+      {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
 }
