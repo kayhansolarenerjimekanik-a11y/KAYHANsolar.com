@@ -3,30 +3,56 @@
 import { Minus, Plus, ShoppingBag, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { mockSiteSettings, turkishCities } from "@/lib/mock/data";
+import { applyCampaigns } from "@/lib/campaigns";
+import { turkishCities } from "@/lib/mock/data";
 import { formatPrice } from "@/lib/utils";
 import { buildOrderWhatsAppLink } from "@/lib/whatsapp";
 import { useCart } from "@/store/cart";
+import type { Campaign, SiteSettings } from "@/types";
 import type { ShippingAddress } from "@/types/cart";
 
 const SHIPPING_THRESHOLD = 50000;
 const SHIPPING_COST = 500;
 
-export function CartView() {
+interface CartViewProps {
+  settings: SiteSettings;
+  campaigns: Campaign[];
+  productCategoryById: Record<string, string>;
+}
+
+export function CartView({
+  settings,
+  campaigns,
+  productCategoryById,
+}: CartViewProps) {
   const items = useCart((s) => s.items);
   const isHydrated = useCart((s) => s.isHydrated);
   const updateQuantity = useCart((s) => s.updateQuantity);
   const removeItem = useCart((s) => s.removeItem);
-  const subtotal = useCart((s) => s.getSubtotal());
   const [showAddressForm, setShowAddressForm] = useState(false);
 
-  const shipping = subtotal >= SHIPPING_THRESHOLD ? 0 : SHIPPING_COST;
-  const total = subtotal + shipping;
+  const calc = useMemo(
+    () =>
+      applyCampaigns(
+        {
+          items: items.map((i) => ({
+            productId: i.productId,
+            quantity: i.quantity,
+            price: i.price,
+          })),
+          productCategoryById,
+          baseShippingCost: SHIPPING_COST,
+          freeShippingThreshold: SHIPPING_THRESHOLD,
+        },
+        campaigns,
+      ),
+    [items, campaigns, productCategoryById],
+  );
 
   const { register, handleSubmit, formState } = useForm<ShippingAddress>({
     mode: "onBlur",
@@ -34,9 +60,9 @@ export function CartView() {
 
   const onSubmit = handleSubmit((data) => {
     const link = buildOrderWhatsAppLink(
-      mockSiteSettings.whatsappNumber,
+      settings.whatsappNumber,
       items,
-      subtotal,
+      calc.total - calc.shippingCost,
       data,
     );
     window.open(link, "_blank", "noopener,noreferrer");
@@ -182,28 +208,54 @@ export function CartView() {
               <div className="flex justify-between">
                 <dt className="text-muted">Ara Toplam</dt>
                 <dd className="font-medium tabular-nums">
-                  {formatPrice(subtotal)}
+                  {formatPrice(calc.subtotal)}
                 </dd>
               </div>
+
+              {calc.appliedCampaigns.length > 0 && (
+                <div className="space-y-2 rounded-xl bg-lime-primary/10 p-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-lime-dark dark:text-lime-primary">
+                    Uygulanan Kampanyalar
+                  </p>
+                  {calc.appliedCampaigns.map((a) => (
+                    <div
+                      key={a.campaignId}
+                      className="flex items-start justify-between gap-3"
+                    >
+                      <span className="text-xs font-medium text-foreground">
+                        {a.title}
+                      </span>
+                      <span className="text-xs font-semibold tabular-nums text-success">
+                        {a.freeShipping && a.discountAmount === 0
+                          ? "Kargo bedava"
+                          : `−${formatPrice(a.discountAmount)}`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               <div className="flex justify-between">
                 <dt className="text-muted">Kargo</dt>
                 <dd className="font-medium tabular-nums">
-                  {shipping === 0 ? (
+                  {calc.shippingCost === 0 ? (
                     <span className="text-success">Bedava</span>
                   ) : (
-                    formatPrice(shipping)
+                    formatPrice(calc.shippingCost)
                   )}
                 </dd>
               </div>
-              {shipping > 0 && (
+
+              {calc.shippingCost > 0 && calc.subtotal < SHIPPING_THRESHOLD && (
                 <p className="rounded-lg bg-elevated px-3 py-2 text-xs text-muted">
-                  {formatPrice(SHIPPING_THRESHOLD - subtotal)} daha alışveriş
-                  yapın, kargo bedava olsun.
+                  {formatPrice(SHIPPING_THRESHOLD - calc.subtotal)} daha
+                  alışveriş yapın, kargo bedava olsun.
                 </p>
               )}
+
               <div className="flex justify-between border-t border-border pt-3 text-base font-semibold">
                 <dt>Toplam</dt>
-                <dd className="tabular-nums">{formatPrice(total)}</dd>
+                <dd className="tabular-nums">{formatPrice(calc.total)}</dd>
               </div>
             </dl>
 
@@ -299,8 +351,7 @@ export function CartView() {
           <div className="rounded-2xl border border-dashed border-border bg-elevated p-4 text-xs text-muted">
             <span className="font-semibold text-foreground">Demo modu:</span>{" "}
             Sipariş bilgileriniz WhatsApp linki olarak hazırlanır, gerçek bir
-            ödeme alınmaz. Bütün entegrasyonlar açıldığında otomatik ödeme aktif
-            olur.
+            ödeme alınmaz.
           </div>
         </div>
       </div>
