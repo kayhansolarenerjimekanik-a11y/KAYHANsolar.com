@@ -1,7 +1,6 @@
-import "dotenv/config";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { createClient } from "@supabase/supabase-js";
 
-import { embed } from "../lib/gemini/embeddings";
-import { insertChunks } from "../lib/ai-knowledge/repository";
 import { chunkText } from "../lib/gemini/chunker";
 
 const SEED_DOCS = [
@@ -80,21 +79,51 @@ Servis: Yıllık 1-2 bakım önerilir (panel temizliği, kablo kontrolü). Uzakt
 ];
 
 async function main() {
+  const geminiKey = process.env.GEMINI_API_KEY;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!geminiKey || !supabaseUrl || !supabaseKey) {
+    console.error("Missing env: GEMINI_API_KEY, NEXT_PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY");
+    process.exit(1);
+  }
+
+  const gemini = new GoogleGenerativeAI(geminiKey);
+  const supabase = createClient(supabaseUrl, supabaseKey, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const embedModel = gemini.getGenerativeModel({ model: "gemini-embedding-001" });
+
   console.log("Seeding ai_knowledge...");
+
+  let totalChunks = 0;
   for (const doc of SEED_DOCS) {
     const chunks = chunkText(doc.body);
     console.log(`  • ${doc.title} → ${chunks.length} chunk(s)`);
-    const inserts = await Promise.all(
-      chunks.map(async (content) => ({
+
+    const rows = [];
+    for (const content of chunks) {
+      const result = await embedModel.embedContent({
+        content: { parts: [{ text: content }], role: "user" },
+        outputDimensionality: 768,
+      } as Parameters<typeof embedModel.embedContent>[0]);
+      rows.push({
         title: doc.title,
         content,
-        sourceType: doc.sourceType,
-        embedding: await embed(content),
-      })),
-    );
-    await insertChunks(inserts);
+        source_type: doc.sourceType,
+        embedding: result.embedding.values,
+        metadata: {},
+      });
+    }
+
+    const { error } = await supabase.from("ai_knowledge").insert(rows);
+    if (error) {
+      console.error(`    ✗ Insert failed: ${error.message}`);
+      process.exit(1);
+    }
+    totalChunks += rows.length;
   }
-  console.log("Done.");
+
+  console.log(`\nDone. ${totalChunks} chunks inserted across ${SEED_DOCS.length} documents.`);
 }
 
 main().catch((err) => {

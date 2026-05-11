@@ -14,5 +14,6 @@ export function getGemini(): GoogleGenerativeAI {
   return cached;
 }
 
-export const GEMINI_CHAT_MODEL = "gemini-2.0-flash-exp";
-export const GEMINI_EMBEDDING_MODEL = "text-embedding-004";
+export const GEMINI_CHAT_MODEL = "gemini-2.5-flash";
+export const GEMINI_EMBEDDING_MODEL = "gemini-embedding-001";
+export const GEMINI_EMBEDDING_DIMENSIONS = 768;
