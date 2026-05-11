@@ -12,6 +12,7 @@ import { Container } from "@/components/ui/container";
 import { ProductJsonLd } from "@/components/seo/product-jsonld";
 import { repo } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
+import { recordEvent } from "@/lib/analytics/repository";
 
 interface ProductPageProps {
   params: Promise<{ slug: string }>;
@@ -45,6 +46,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
   const product = await repo.getProductBySlug(slug);
   if (!product) notFound();
+
+  // Best-effort analytics — never throws.
+  recordEvent({
+    type: "product_view",
+    pageUrl: `/urun/${product.slug}`,
+    productId: product.id,
+  }).catch(() => {
+    /* analytics must never break the page */
+  });
 
   const categories = await repo.listCategories();
   const category = categories.find((c) => c.id === product.categoryId);

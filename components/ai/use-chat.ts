@@ -30,6 +30,16 @@ export function useChat() {
     setMessages((prev) => [...prev, userMsg, aiMsg]);
     setSending(true);
 
+    // Best-effort analytics for chat usage
+    void fetch("/api/analytics", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "chat_message" }),
+      keepalive: true,
+    }).catch(() => {
+      /* ignore */
+    });
+
     const history = messages.map((m) => ({ role: m.role, content: m.content }));
     abortRef.current?.abort();
     const ctl = new AbortController();
