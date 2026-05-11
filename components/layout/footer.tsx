@@ -20,7 +20,7 @@ const footerLinks = {
   yasal: [
     { href: "/kvkk", label: "KVKK Aydınlatma Metni" },
     { href: "/gizlilik", label: "Gizlilik Politikası" },
-    { href: "/cerez", label: "Çerez Politikası" },
+    { href: "/cerez-politikasi", label: "Çerez Politikası" },
     { href: "/mesafeli-satis", label: "Mesafeli Satış Sözleşmesi" },
     { href: "/iade", label: "İade ve Değişim" },
   ],

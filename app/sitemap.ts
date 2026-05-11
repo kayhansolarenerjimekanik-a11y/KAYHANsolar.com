@@ -12,11 +12,16 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
   "/hakkimizda",
   "/sss",
   "/iletisim",
+  "/kvkk",
+  "/gizlilik",
+  "/cerez-politikasi",
+  "/mesafeli-satis",
+  "/iade",
 ].map((path) => ({
   url: `${SITE_URL}${path}`,
   lastModified: new Date(),
   changeFrequency: "weekly",
-  priority: path === "" ? 1.0 : 0.7,
+  priority: path === "" ? 1.0 : 0.5,
 }));
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
