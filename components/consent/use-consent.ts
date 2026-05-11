@@ -13,8 +13,9 @@ export function useConsent() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    setConsent(readConsent());
+    // SSR hydration guard — read consent from localStorage on client
     // eslint-disable-next-line react-hooks/set-state-in-effect
+    setConsent(readConsent());
     setHydrated(true);
     function onChange(e: Event) {
       const ce = e as CustomEvent<ConsentState | null>;

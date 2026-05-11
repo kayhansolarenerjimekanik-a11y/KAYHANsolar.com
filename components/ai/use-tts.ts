@@ -27,12 +27,14 @@ export interface TtsState {
 
 export function useTts(): TtsState {
   const [status, setStatus] = useState<"idle" | "speaking" | "paused">("idle");
-  const supportedRef = useRef(false);
+  const [supported, setSupported] = useState(false);
   const turkishVoiceRef = useRef<SpeechSynthesisVoice | null>(null);
 
   useEffect(() => {
     if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-    supportedRef.current = true;
+    // SSR hydration guard — mark TTS available client-side
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setSupported(true);
     const load = () => {
       const voices = window.speechSynthesis.getVoices();
       turkishVoiceRef.current =
@@ -49,7 +51,7 @@ export function useTts(): TtsState {
   }, []);
 
   const speak = useCallback((text: string) => {
-    if (!supportedRef.current) return;
+    if (!supported) return;
     const clean = stripMarkdownAndEmoji(text);
     if (!clean) return;
     window.speechSynthesis.cancel();
@@ -61,25 +63,25 @@ export function useTts(): TtsState {
     u.onerror = () => setStatus("idle");
     setStatus("speaking");
     window.speechSynthesis.speak(u);
-  }, []);
+  }, [supported]);
 
   const pause = useCallback(() => {
-    if (!supportedRef.current) return;
+    if (!supported) return;
     window.speechSynthesis.pause();
     setStatus("paused");
-  }, []);
+  }, [supported]);
 
   const resume = useCallback(() => {
-    if (!supportedRef.current) return;
+    if (!supported) return;
     window.speechSynthesis.resume();
     setStatus("speaking");
-  }, []);
+  }, [supported]);
 
   const stop = useCallback(() => {
-    if (!supportedRef.current) return;
+    if (!supported) return;
     window.speechSynthesis.cancel();
     setStatus("idle");
-  }, []);
+  }, [supported]);
 
   return {
     status,
@@ -87,6 +89,6 @@ export function useTts(): TtsState {
     pause,
     resume,
     stop,
-    supported: supportedRef.current,
+    supported,
   };
 }
