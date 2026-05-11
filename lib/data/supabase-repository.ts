@@ -12,57 +12,44 @@ import * as StockSubs from "./supabase/stock-subscriptions";
 
 import type { Repository } from "./repository";
 
-const notImpl = (name: string) => () => {
-  throw new Error(`supabaseRepository.${name} not yet implemented`);
-};
-
 export const supabaseRepository: Repository = {
-  // Products
   listProducts: Products.listProducts,
   getProductById: Products.getProductById,
   getProductBySlug: Products.getProductBySlug,
-  createProduct: notImpl("createProduct") as Repository["createProduct"],
-  updateProduct: notImpl("updateProduct") as Repository["updateProduct"],
-  deleteProduct: notImpl("deleteProduct") as Repository["deleteProduct"],
-  // Categories
+  createProduct: Products.createProduct,
+  updateProduct: Products.updateProduct,
+  deleteProduct: Products.deleteProduct,
   listCategories: Categories.listCategories,
-  createCategory: notImpl("createCategory") as Repository["createCategory"],
-  updateCategory: notImpl("updateCategory") as Repository["updateCategory"],
-  deleteCategory: notImpl("deleteCategory") as Repository["deleteCategory"],
-  // Campaigns
+  createCategory: Categories.createCategory,
+  updateCategory: Categories.updateCategory,
+  deleteCategory: Categories.deleteCategory,
   listCampaigns: Campaigns.listCampaigns,
   getCampaignById: Campaigns.getCampaignById,
-  createCampaign: notImpl("createCampaign") as Repository["createCampaign"],
-  updateCampaign: notImpl("updateCampaign") as Repository["updateCampaign"],
-  deleteCampaign: notImpl("deleteCampaign") as Repository["deleteCampaign"],
-  // Offers
+  createCampaign: Campaigns.createCampaign,
+  updateCampaign: Campaigns.updateCampaign,
+  deleteCampaign: Campaigns.deleteCampaign,
   listOffers: Offers.listOffers,
   getOfferById: Offers.getOfferById,
-  createOffer: notImpl("createOffer") as Repository["createOffer"],
-  updateOffer: notImpl("updateOffer") as Repository["updateOffer"],
-  // Orders
+  createOffer: Offers.createOffer,
+  updateOffer: Offers.updateOffer,
   listOrders: Orders.listOrders,
   getOrderById: Orders.getOrderById,
-  createOrder: notImpl("createOrder") as Repository["createOrder"],
-  updateOrderStatus: notImpl("updateOrderStatus") as Repository["updateOrderStatus"],
-  // Gallery
+  createOrder: Orders.createOrder,
+  updateOrderStatus: Orders.updateOrderStatus,
   listGalleryPosts: Gallery.listGalleryPosts,
   getGalleryPostBySlug: Gallery.getGalleryPostBySlug,
-  createGalleryPost: notImpl("createGalleryPost") as Repository["createGalleryPost"],
-  updateGalleryPost: notImpl("updateGalleryPost") as Repository["updateGalleryPost"],
-  deleteGalleryPost: notImpl("deleteGalleryPost") as Repository["deleteGalleryPost"],
-  // Settings
+  createGalleryPost: Gallery.createGalleryPost,
+  updateGalleryPost: Gallery.updateGalleryPost,
+  deleteGalleryPost: Gallery.deleteGalleryPost,
   getSettings: Settings.getSettings,
-  updateSettings: notImpl("updateSettings") as Repository["updateSettings"],
-  // Notifications
+  updateSettings: Settings.updateSettings,
   listNotifications: Notifications.listNotifications,
   unreadCount: Notifications.unreadCount,
-  markNotificationRead: notImpl("markNotificationRead") as Repository["markNotificationRead"],
-  markAllNotificationsRead: notImpl("markAllNotificationsRead") as Repository["markAllNotificationsRead"],
-  pushNotification: notImpl("pushNotification") as Repository["pushNotification"],
-  // Stock subs
+  markNotificationRead: Notifications.markNotificationRead,
+  markAllNotificationsRead: Notifications.markAllNotificationsRead,
+  pushNotification: Notifications.pushNotification,
   listStockSubscriptions: StockSubs.listStockSubscriptions,
-  createStockSubscription: notImpl("createStockSubscription") as Repository["createStockSubscription"],
-  deleteStockSubscription: notImpl("deleteStockSubscription") as Repository["deleteStockSubscription"],
-  markStockSubscriptionNotified: notImpl("markStockSubscriptionNotified") as Repository["markStockSubscriptionNotified"],
+  createStockSubscription: StockSubs.createStockSubscription,
+  deleteStockSubscription: StockSubs.deleteStockSubscription,
+  markStockSubscriptionNotified: StockSubs.markStockSubscriptionNotified,
 };
