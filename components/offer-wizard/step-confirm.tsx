@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { submitOfferAction } from "@/app/(public)/teklif-al/actions/submit";
 import { Button } from "@/components/ui/button";
+import { Turnstile } from "@/components/security/turnstile";
 import type { WizardState } from "@/types/offer-wizard";
 
 interface Props {
@@ -19,15 +20,22 @@ interface Props {
 export function StepConfirm({ data, patch, onPrev, onSuccess }: Props) {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || null;
+  const captchaRequired = Boolean(siteKey);
 
   function handleSubmit() {
     if (!data.kvkkAccepted) {
       setError("KVKK aydınlatma metnini onaylayın");
       return;
     }
+    if (captchaRequired && !captchaToken) {
+      setError("Lütfen güvenlik doğrulamasını tamamlayın");
+      return;
+    }
     setError(null);
     startTransition(async () => {
-      const result = await submitOfferAction(data);
+      const result = await submitOfferAction(data, captchaToken);
       if (!result.ok) {
         setError(result.error ?? "Gönderim başarısız");
         toast.error("Gönderilemedi", { description: result.error });
@@ -136,6 +144,12 @@ export function StepConfirm({ data, patch, onPrev, onSuccess }: Props) {
           {error}
         </div>
       )}
+
+      <Turnstile
+        siteKey={siteKey}
+        onToken={setCaptchaToken}
+        onExpire={() => setCaptchaToken(null)}
+      />
 
       <div className="flex items-center justify-between gap-3">
         <Button type="button" variant="outline" onClick={onPrev}>

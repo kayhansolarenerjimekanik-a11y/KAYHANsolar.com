@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { repo } from "@/lib/data";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 import { finalSubmitSchema } from "@/lib/validations/offer-wizard";
 import type { WizardState } from "@/types/offer-wizard";
 
@@ -14,7 +15,13 @@ export interface SubmitOfferResult {
 
 export async function submitOfferAction(
   data: WizardState,
+  captchaToken: string | null = null,
 ): Promise<SubmitOfferResult> {
+  const captchaOk = await verifyTurnstileToken(captchaToken);
+  if (!captchaOk) {
+    return { ok: false, error: "Güvenlik doğrulaması başarısız" };
+  }
+
   const parsed = finalSubmitSchema.safeParse({
     fullName: data.fullName,
     city: data.city,
