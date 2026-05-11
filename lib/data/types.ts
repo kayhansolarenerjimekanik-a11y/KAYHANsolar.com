@@ -69,4 +69,13 @@ export interface AdminNotification {
   createdAt: string;
 }
 
+export interface StockSubscription {
+  id: string;
+  productId: string;
+  email?: string;
+  pushSubscriptionJson?: string; // JSON serialized PushSubscription
+  isNotified: boolean;
+  createdAt: string;
+}
+
 export type { Product, Category, Campaign, GalleryPost, SiteSettings };

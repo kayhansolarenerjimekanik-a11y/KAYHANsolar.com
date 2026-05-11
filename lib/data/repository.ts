@@ -9,6 +9,7 @@ import type {
   OrderStatus,
   Product,
   SiteSettings,
+  StockSubscription,
 } from "./types";
 
 export interface Repository {
@@ -62,4 +63,12 @@ export interface Repository {
   markNotificationRead(id: string): Promise<void>;
   markAllNotificationsRead(): Promise<void>;
   pushNotification(data: Omit<AdminNotification, "id" | "isRead" | "createdAt">): Promise<AdminNotification>;
+
+  // Stock subscriptions
+  listStockSubscriptions(productId?: string): Promise<StockSubscription[]>;
+  createStockSubscription(
+    data: Omit<StockSubscription, "id" | "isNotified" | "createdAt">,
+  ): Promise<StockSubscription>;
+  deleteStockSubscription(id: string): Promise<void>;
+  markStockSubscriptionNotified(id: string): Promise<void>;
 }

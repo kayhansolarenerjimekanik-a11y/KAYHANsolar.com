@@ -15,6 +15,7 @@ import type {
   Order,
   Product,
   SiteSettings,
+  StockSubscription,
 } from "./types";
 
 // Seed offers for admin demo
@@ -134,6 +135,16 @@ const seedNotifications: AdminNotification[] = [
   },
 ];
 
+const seedStockSubscriptions: StockSubscription[] = [
+  {
+    id: "ss-1",
+    productId: "p-5", // Solar Sokak Lambası — stockQuantity 0 in seed
+    email: "musteri@example.com",
+    isNotified: false,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 12).toISOString(),
+  },
+];
+
 // Singleton — survives across requests within a single server process.
 // In serverless production with multiple instances, state isn't shared;
 // this is acceptable for demo mode and goes away when Supabase ships.
@@ -150,6 +161,7 @@ export interface DemoStore {
   orders: Order[];
   notifications: AdminNotification[];
   settings: SiteSettings;
+  stockSubscriptions: StockSubscription[];
 }
 
 function freshStore(): DemoStore {
@@ -162,6 +174,7 @@ function freshStore(): DemoStore {
     orders: structuredClone(seedOrders),
     notifications: structuredClone(seedNotifications),
     settings: structuredClone(mockSiteSettings) as SiteSettings,
+    stockSubscriptions: structuredClone(seedStockSubscriptions),
   };
 }
 

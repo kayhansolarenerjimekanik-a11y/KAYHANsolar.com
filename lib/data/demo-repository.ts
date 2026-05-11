@@ -254,6 +254,34 @@ export const demoRepository: Repository = {
     store.notifications.unshift(notification);
     return notification;
   },
+
+  // ===== Stock Subscriptions =====
+  async listStockSubscriptions(productId) {
+    const all = [...getDemoStore().stockSubscriptions];
+    return productId ? all.filter((s) => s.productId === productId) : all;
+  },
+  async createStockSubscription(data) {
+    const store = getDemoStore();
+    const subscription = {
+      ...data,
+      id: genId("ss"),
+      isNotified: false,
+      createdAt: new Date().toISOString(),
+    };
+    store.stockSubscriptions.unshift(subscription);
+    return subscription;
+  },
+  async deleteStockSubscription(id) {
+    const store = getDemoStore();
+    store.stockSubscriptions = store.stockSubscriptions.filter(
+      (s) => s.id !== id,
+    );
+  },
+  async markStockSubscriptionNotified(id) {
+    const store = getDemoStore();
+    const sub = store.stockSubscriptions.find((s) => s.id === id);
+    if (sub) sub.isNotified = true;
+  },
 };
 
 // Re-export type so consumers can avoid importing both files
