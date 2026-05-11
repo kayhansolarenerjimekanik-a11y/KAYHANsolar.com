@@ -1,6 +1,9 @@
 import "server-only";
 
 import { repo } from "@/lib/data";
+import { sendStockBackEmail } from "@/lib/email/resend";
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kayhansolar.com";
 
 export async function subscribeToStock(
   productId: string,
@@ -20,20 +23,30 @@ export async function subscribeToStock(
 export async function dispatchForProduct(productId: string): Promise<number> {
   const subs = await repo.listStockSubscriptions(productId);
   const pending = subs.filter((s) => !s.isNotified);
-  // Demo: just mark notified + push admin notification.
-  // Real impl: send email (Resend) + Web Push to subscriptionJson.
+  const product = await repo.getProductById(productId);
+  if (!product || pending.length === 0) return 0;
+
+  const productUrl = `${SITE_URL}/urun/${product.slug}`;
+
   for (const s of pending) {
+    if (s.email) {
+      try {
+        await sendStockBackEmail(s.email, product.name, productUrl);
+      } catch (err) {
+        console.error("[notify] email send failed", err);
+      }
+    }
+    // Web push dispatch (when VAPID configured) — Faz 6.
     await repo.markStockSubscriptionNotified(s.id);
   }
-  if (pending.length > 0) {
-    const product = await repo.getProductById(productId);
-    await repo.pushNotification({
-      type: "system",
-      title: "Stok Bildirimleri Gönderildi (demo)",
-      message: `${product?.name ?? productId} için ${pending.length} aboneye bildirim hazır`,
-      relatedId: productId,
-      relatedType: "product",
-    });
-  }
+
+  await repo.pushNotification({
+    type: "system",
+    title: "Stok Bildirimi Gönderildi",
+    message: `${product.name} için ${pending.length} aboneye email iletildi`,
+    relatedId: productId,
+    relatedType: "product",
+  });
+
   return pending.length;
 }

@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth";
 import { repo } from "@/lib/data";
 import type { OrderStatus } from "@/lib/data/types";
+import { sendOrderStatusEmail } from "@/lib/email/resend";
 
 const validStatuses: OrderStatus[] = [
   "pending",
@@ -22,7 +23,12 @@ export async function updateOrderStatusAction(
 ): Promise<void> {
   await requireAdmin();
   if (!validStatuses.includes(status)) return;
-  await repo.updateOrderStatus(orderId, status);
+  const updated = await repo.updateOrderStatus(orderId, status);
+  try {
+    await sendOrderStatusEmail(updated);
+  } catch (err) {
+    console.error("[email] sendOrderStatusEmail failed", err);
+  }
   revalidatePath("/kayhan-yonetim/siparisler");
   revalidatePath("/kayhan-yonetim");
 }

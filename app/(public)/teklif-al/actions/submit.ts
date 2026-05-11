@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { repo } from "@/lib/data";
+import { sendNewOfferEmail } from "@/lib/email/resend";
 import { checkOfferRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { finalSubmitSchema } from "@/lib/validations/offer-wizard";
@@ -63,6 +64,13 @@ export async function submitOfferAction(
     phone: parsed.data.phone,
     email: parsed.data.email ?? undefined,
   });
+
+  // Send admin email — fire-and-forget; failure shouldn't block success response.
+  try {
+    await sendNewOfferEmail(offer);
+  } catch (err) {
+    console.error("[email] sendNewOfferEmail failed", err);
+  }
 
   revalidatePath("/kayhan-yonetim");
   revalidatePath("/kayhan-yonetim/teklifler");
