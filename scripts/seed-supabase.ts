@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { createHash } from "crypto";
 import {
   mockCategories,
   mockProducts,
@@ -16,13 +17,29 @@ const adminSupabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
+/**
+ * Converts an arbitrary string ID to a deterministic UUID v4-format string.
+ * Needed because mock data uses short slug-like IDs ("cat-panel", "p-1", etc.)
+ * while the Supabase schema requires UUID columns.
+ */
+function toUuid(id: string): string {
+  const hash = createHash("md5").update(id).digest("hex");
+  return [
+    hash.slice(0, 8),
+    hash.slice(8, 12),
+    "4" + hash.slice(13, 16),
+    ((parseInt(hash[16], 16) & 0x3) | 0x8).toString(16) + hash.slice(17, 20),
+    hash.slice(20, 32),
+  ].join("-");
+}
+
 async function main() {
   // 1. Categories
   console.log(`Seeding ${mockCategories.length} categories...`);
   for (const cat of mockCategories) {
     const { error } = await adminSupabase.from("categories").upsert(
       {
-        id: cat.id,
+        id: toUuid(cat.id),
         slug: cat.slug,
         name: cat.name,
         description: cat.description ?? null,
@@ -39,13 +56,13 @@ async function main() {
   for (const p of mockProducts) {
     const { error: prodErr } = await adminSupabase.from("products").upsert(
       {
-        id: p.id,
+        id: toUuid(p.id),
         slug: p.slug,
         name: p.name,
         short_description: p.shortDescription,
         long_description: p.longDescription ?? null,
         technical_specs: p.technicalSpecs ?? null,
-        category_id: p.categoryId,
+        category_id: toUuid(p.categoryId),
         brand: p.brand ?? null,
         current_price: p.currentPrice,
         compare_at_price: p.compareAtPrice ?? null,
@@ -63,11 +80,11 @@ async function main() {
       console.error(`  Product ${p.slug} failed:`, prodErr.message);
       continue;
     }
-    await adminSupabase.from("product_media").delete().eq("product_id", p.id);
+    await adminSupabase.from("product_media").delete().eq("product_id", toUuid(p.id));
     if (p.media.length > 0) {
       const { error: mediaErr } = await adminSupabase.from("product_media").insert(
         p.media.map((m, i) => ({
-          product_id: p.id,
+          product_id: toUuid(p.id),
           media_type: m.type,
           url: m.url,
           thumbnail_url: m.thumbnailUrl ?? null,
@@ -84,7 +101,7 @@ async function main() {
   for (const c of mockCampaigns) {
     const { error } = await adminSupabase.from("campaigns").upsert(
       {
-        id: c.id,
+        id: toUuid(c.id),
         slug: c.slug,
         title: c.title,
         description: c.description ?? null,
@@ -92,7 +109,7 @@ async function main() {
         rule_type: c.ruleType,
         rule_config: c.ruleConfig,
         applicable_to: c.applicableTo,
-        target_ids: c.targetIds,
+        target_ids: c.targetIds.map(toUuid),
         start_date: c.startDate,
         end_date: c.endDate ?? null,
         is_active: c.isActive,
@@ -109,7 +126,7 @@ async function main() {
   for (const g of mockGallery) {
     const { error: gErr } = await adminSupabase.from("gallery_posts").upsert(
       {
-        id: g.id,
+        id: toUuid(g.id),
         slug: g.slug,
         title: g.title,
         description: g.description ?? null,
@@ -124,11 +141,11 @@ async function main() {
       console.error(`  Gallery ${g.slug} failed:`, gErr.message);
       continue;
     }
-    await adminSupabase.from("gallery_media").delete().eq("post_id", g.id);
+    await adminSupabase.from("gallery_media").delete().eq("post_id", toUuid(g.id));
     if (g.media.length > 0) {
       const { error: mErr } = await adminSupabase.from("gallery_media").insert(
         g.media.map((m, i) => ({
-          post_id: g.id,
+          post_id: toUuid(g.id),
           media_type: m.type,
           url: m.url,
           thumbnail_url: m.thumbnailUrl ?? null,
