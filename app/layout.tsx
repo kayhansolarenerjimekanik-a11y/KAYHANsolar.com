@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 import { ChatFab } from "@/components/ai/chat-fab";
 import { CookieBanner } from "@/components/consent/cookie-banner";
@@ -80,6 +81,7 @@ export default function RootLayout({
           {children}
           <ChatFab />
           <CookieBanner />
+          <Analytics />
           <Toaster
             position="bottom-right"
             theme="system"
