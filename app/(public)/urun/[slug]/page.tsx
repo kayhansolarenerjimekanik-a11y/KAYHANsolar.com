@@ -9,6 +9,7 @@ import { ProductBadgeChip } from "@/components/shop/product-badge";
 import { ProductGallery } from "@/components/shop/product-gallery";
 import { StockStatus } from "@/components/shop/stock-status";
 import { Container } from "@/components/ui/container";
+import { ProductJsonLd } from "@/components/seo/product-jsonld";
 import { repo } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 
@@ -30,6 +31,13 @@ export async function generateMetadata({
   return {
     title: product.name,
     description: product.shortDescription,
+    openGraph: {
+      title: product.name,
+      description: product.shortDescription,
+      images: product.media[0]?.url
+        ? [{ url: product.media[0].url, alt: product.name }]
+        : undefined,
+    },
   };
 }
 
@@ -62,6 +70,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <Container className="py-8 lg:py-14">
+      <ProductJsonLd
+        product={product}
+        url={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://kayhansolar.com"}/urun/${product.slug}`}
+      />
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 text-xs text-muted"
