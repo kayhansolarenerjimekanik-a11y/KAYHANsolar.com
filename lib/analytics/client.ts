@@ -19,6 +19,15 @@ function getSessionId(): string {
 
 export async function trackEvent(event: AnalyticsEvent): Promise<void> {
   if (typeof window === "undefined") return;
+  // Gate behind analytics consent
+  try {
+    const raw = localStorage.getItem("kayhan-consent-v1");
+    if (!raw) return; // no consent yet → don't track
+    const parsed = JSON.parse(raw) as { analytics?: boolean };
+    if (!parsed.analytics) return;
+  } catch {
+    return;
+  }
   const payload = { ...event, sessionId: event.sessionId ?? getSessionId() };
   try {
     if (typeof navigator !== "undefined" && "sendBeacon" in navigator) {
