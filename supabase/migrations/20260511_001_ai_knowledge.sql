@@ -51,11 +51,13 @@ $$;
 -- RLS: service role only writes; anon read is OK (no PII in knowledge base)
 alter table public.ai_knowledge enable row level security;
 
+drop policy if exists "ai_knowledge_read_all" on public.ai_knowledge;
 create policy "ai_knowledge_read_all"
   on public.ai_knowledge for select
   to anon, authenticated
   using (is_active = true);
 
+drop policy if exists "ai_knowledge_service_role_all" on public.ai_knowledge;
 create policy "ai_knowledge_service_role_all"
   on public.ai_knowledge for all
   to service_role

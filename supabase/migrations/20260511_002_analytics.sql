@@ -19,11 +19,13 @@ create index if not exists idx_analytics_session
 
 alter table public.analytics_events enable row level security;
 
+drop policy if exists "analytics_service_role_all" on public.analytics_events;
 create policy "analytics_service_role_all"
   on public.analytics_events for all
   to service_role
   using (true) with check (true);
 
+drop policy if exists "analytics_anon_insert" on public.analytics_events;
 create policy "analytics_anon_insert"
   on public.analytics_events for insert
   to anon, authenticated
