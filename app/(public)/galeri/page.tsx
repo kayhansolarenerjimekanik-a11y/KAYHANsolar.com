@@ -1,6 +1,7 @@
 import { MapPin } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 
 import { Container } from "@/components/ui/container";
 import { repo } from "@/lib/data";
@@ -28,8 +29,9 @@ export default async function GalleryPage() {
 
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
-          <article
+          <Link
             key={post.id}
+            href={`/galeri/${post.slug}`}
             className="group flex flex-col overflow-hidden rounded-2xl border border-border bg-surface transition-all hover:-translate-y-1 hover:border-lime-primary hover:shadow-xl hover:shadow-lime-primary/10"
           >
             <div className="relative aspect-[4/3] overflow-hidden bg-elevated">
@@ -62,7 +64,7 @@ export default async function GalleryPage() {
                 </div>
               )}
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </Container>
