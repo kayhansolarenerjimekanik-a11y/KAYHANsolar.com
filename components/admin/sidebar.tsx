@@ -3,6 +3,7 @@
 import {
   BarChart3,
   Bell,
+  BellRing,
   Image as ImageIcon,
   LayoutDashboard,
   type LucideIcon,
@@ -30,6 +31,7 @@ type NavItem = {
 const items: NavItem[] = [
   { href: "/kayhan-yonetim", label: "Panel", icon: LayoutDashboard, exact: true },
   { href: "/kayhan-yonetim/bildirimler", label: "Bildirimler", icon: Bell },
+  { href: "/kayhan-yonetim/stok-bildirimleri", label: "Stok Bildirimleri", icon: BellRing },
   { href: "/kayhan-yonetim/urunler", label: "Ürünler", icon: Package },
   { href: "/kayhan-yonetim/kategoriler", label: "Kategoriler", icon: Tag },
   { href: "/kayhan-yonetim/kampanyalar", label: "Kampanyalar", icon: Sparkles },

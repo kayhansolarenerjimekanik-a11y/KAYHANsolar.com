@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 
 import { requireAdmin } from "@/lib/auth";
 import { repo } from "@/lib/data";
+import { dispatchForProduct } from "@/lib/stock-notifications";
 import { productInputSchema, type ProductInput } from "@/lib/validations/product";
 
 export interface ProductActionState {
@@ -100,6 +101,9 @@ export async function updateProductAction(
   const result = parseFormData(formData);
   if ("error" in result) return result;
 
+  const before = await repo.getProductById(id);
+  const wasOutOfStock = before ? before.stockQuantity === 0 : false;
+
   const updated = await repo.updateProduct(id, {
     ...result,
     media: result.media.map((m, i) => ({
@@ -117,6 +121,11 @@ export async function updateProductAction(
     brand: result.brand || undefined,
     longDescription: result.longDescription || undefined,
   });
+
+  if (wasOutOfStock && updated.stockQuantity > 0) {
+    await dispatchForProduct(id);
+  }
+
   revalidateCatalog(updated.slug);
   redirect(`/kayhan-yonetim/urunler`);
 }
