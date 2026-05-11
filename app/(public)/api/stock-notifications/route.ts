@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { checkStockSubscribeRateLimit } from "@/lib/rate-limit";
 import { subscribeToStock } from "@/lib/stock-notifications";
 
 const bodySchema = z.object({
@@ -10,6 +11,20 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    request.headers.get("x-real-ip") ??
+    "unknown";
+  const limit = checkStockSubscribeRateLimit(ip);
+  if (!limit.allowed) {
+    return NextResponse.json(
+      {
+        error: `Çok fazla istek. Lütfen ${Math.ceil(limit.retryAfterSec / 60)} dakika sonra tekrar deneyin.`,
+      },
+      { status: 429 },
+    );
+  }
+
   let json: unknown;
   try {
     json = await request.json();

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { repo } from "@/lib/data";
+import { checkOfferRateLimit } from "@/lib/rate-limit";
 import { verifyTurnstileToken } from "@/lib/turnstile";
 import { finalSubmitSchema } from "@/lib/validations/offer-wizard";
 import type { WizardState } from "@/types/offer-wizard";
@@ -20,6 +21,14 @@ export async function submitOfferAction(
   const captchaOk = await verifyTurnstileToken(captchaToken);
   if (!captchaOk) {
     return { ok: false, error: "Güvenlik doğrulaması başarısız" };
+  }
+
+  const limit = checkOfferRateLimit(data.phone);
+  if (!limit.allowed) {
+    return {
+      ok: false,
+      error: `Çok fazla deneme. Lütfen ${Math.ceil(limit.retryAfterSec / 60)} dakika sonra tekrar deneyin.`,
+    };
   }
 
   const parsed = finalSubmitSchema.safeParse({
