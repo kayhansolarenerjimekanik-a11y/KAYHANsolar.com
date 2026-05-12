@@ -10,7 +10,8 @@
     "db:migrate": "tsx --env-file=.env.local scripts/apply-migrations.ts",
     "seed:ai": "tsx --env-file=.env.local scripts/seed-ai-knowledge.ts",
     "create:admin": "tsx --env-file=.env.local scripts/create-admin.ts",
-    "seed:supabase": "tsx --env-file=.env.local scripts/seed-supabase.ts"
+    "seed:supabase": "tsx --env-file=.env.local scripts/seed-supabase.ts",
+    "refresh:campaigns": "tsx --env-file=.env.local scripts/refresh-campaign-dates.ts"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
