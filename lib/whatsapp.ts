@@ -52,10 +52,19 @@ export function buildQuickOrderLink(
   whatsappNumber: string,
   productName: string,
   price: number,
+  quantity: number = 1,
 ): string {
-  const text = encodeURIComponent(
-    `Merhaba, "${productName}" (${formatPrice(price)}) ürününü sipariş etmek istiyorum.`,
-  );
+  const lines =
+    quantity > 1
+      ? [
+          `Merhaba, "${productName}" ürününden ${quantity} adet (toplam ${formatPrice(
+            price * quantity,
+          )}) sipariş etmek istiyorum.`,
+        ]
+      : [
+          `Merhaba, "${productName}" (${formatPrice(price)}) ürününü sipariş etmek istiyorum.`,
+        ];
+  const text = encodeURIComponent(lines.join("\n"));
   const clean = whatsappNumber.replace(/\D/g, "");
   return `https://wa.me/${clean}?text=${text}`;
 }

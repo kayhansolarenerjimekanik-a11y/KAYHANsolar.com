@@ -1,9 +1,17 @@
 "use client";
 
-import { Bell, Mail, Minus, Plus, ShoppingCart } from "lucide-react";
+import {
+  AlertCircle,
+  Bell,
+  Mail,
+  Minus,
+  Plus,
+  ShoppingCart,
+  Trash2,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -21,7 +29,44 @@ export function AddToCart({ product, whatsappNumber }: AddToCartProps) {
   const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const addItem = useCart((s) => s.addItem);
+  const updateQuantity = useCart((s) => s.updateQuantity);
+  const removeItem = useCart((s) => s.removeItem);
+  const isHydrated = useCart((s) => s.isHydrated);
+  const existingQuantity = useCart(
+    (s) => s.items.find((i) => i.productId === product.id)?.quantity ?? 0,
+  );
+
   const inStock = product.stockQuantity > 0;
+  const showExisting = isHydrated && existingQuantity > 0 && inStock;
+  const overStock = showExisting && existingQuantity > product.stockQuantity;
+
+  useEffect(() => {
+    if (overStock) {
+      updateQuantity(product.id, product.stockQuantity);
+      toast.info("Stok güncellendi", {
+        description: `${product.name} adediniz ${product.stockQuantity} olarak güncellendi.`,
+      });
+    }
+  }, [overStock, product.id, product.stockQuantity, product.name, updateQuantity]);
+
+  if (!inStock) {
+    return <NotifyWhenAvailable productId={product.id} productName={product.name} />;
+  }
+
+  if (showExisting) {
+    return (
+      <ExistingInCart
+        product={product}
+        existingQuantity={existingQuantity}
+        whatsappNumber={whatsappNumber}
+        onUpdate={(q) => updateQuantity(product.id, q)}
+        onRemove={() => {
+          removeItem(product.id);
+          toast.success("Sepetten çıkarıldı", { description: product.name });
+        }}
+      />
+    );
+  }
 
   const handleAddToCart = () => {
     addItem({
@@ -47,11 +92,8 @@ export function AddToCart({ product, whatsappNumber }: AddToCartProps) {
     whatsappNumber,
     product.name,
     product.currentPrice,
+    quantity,
   );
-
-  if (!inStock) {
-    return <NotifyWhenAvailable productId={product.id} productName={product.name} />;
-  }
 
   return (
     <div className="space-y-4">
@@ -99,6 +141,95 @@ export function AddToCart({ product, whatsappNumber }: AddToCartProps) {
       <p className="text-xs text-muted">
         &quot;Hemen Satın Al&quot; WhatsApp üzerinden tamamlanır.
       </p>
+    </div>
+  );
+}
+
+function ExistingInCart({
+  product,
+  existingQuantity,
+  whatsappNumber,
+  onUpdate,
+  onRemove,
+}: {
+  product: Product;
+  existingQuantity: number;
+  whatsappNumber: string;
+  onUpdate: (quantity: number) => void;
+  onRemove: () => void;
+}) {
+  const canIncrement = existingQuantity < product.stockQuantity;
+  const whatsappLink = buildQuickOrderLink(
+    whatsappNumber,
+    product.name,
+    product.currentPrice,
+    existingQuantity,
+  );
+
+  return (
+    <div className="space-y-4">
+      <p className="text-sm text-muted">
+        Sepetinizde:{" "}
+        <span className="font-semibold text-foreground">
+          {existingQuantity} adet
+        </span>
+      </p>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="inline-flex items-center rounded-xl border border-border">
+          <button
+            type="button"
+            onClick={() => {
+              if (existingQuantity <= 1) onRemove();
+              else onUpdate(existingQuantity - 1);
+            }}
+            aria-label="Azalt"
+            className="grid h-10 w-10 place-items-center rounded-l-xl text-muted hover:text-foreground"
+          >
+            <Minus className="h-4 w-4" strokeWidth={2.2} />
+          </button>
+          <span className="min-w-[3rem] text-center text-sm font-semibold tabular-nums">
+            {existingQuantity}
+          </span>
+          <button
+            type="button"
+            onClick={() => canIncrement && onUpdate(existingQuantity + 1)}
+            disabled={!canIncrement}
+            aria-label="Arttır"
+            className="grid h-10 w-10 place-items-center rounded-r-xl text-muted hover:text-foreground disabled:opacity-40"
+          >
+            <Plus className="h-4 w-4" strokeWidth={2.2} />
+          </button>
+        </div>
+
+        <Link href="/sepet" className="flex-1 min-w-[10rem]">
+          <Button variant="secondary" size="lg" className="w-full">
+            Sepete Git →
+          </Button>
+        </Link>
+      </div>
+
+      {!canIncrement && (
+        <p className="flex items-center gap-1.5 text-xs text-warning">
+          <AlertCircle className="h-3.5 w-3.5" strokeWidth={2.2} />
+          Stok dolu — daha fazla eklenemez.
+        </p>
+      )}
+
+      <Link href={whatsappLink} target="_blank" rel="noopener noreferrer">
+        <Button variant="primary" size="lg" className="w-full">
+          Hemen Satın Al ({existingQuantity} adet)
+        </Button>
+      </Link>
+
+      <button
+        type="button"
+        onClick={onRemove}
+        className="flex items-center gap-1.5 text-xs text-muted underline-offset-2 hover:text-danger hover:underline"
+      >
+        <Trash2 className="h-3.5 w-3.5" strokeWidth={2.2} />
+        Sepetten çıkar
+      </button>
     </div>
   );
 }
