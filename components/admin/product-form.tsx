@@ -90,6 +90,33 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
               defaultValue={initial?.longDescription ?? ""}
             />
           </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="metaTitle">SEO başlığı (opsiyonel)</Label>
+            <Input
+              id="metaTitle"
+              name="metaTitle"
+              defaultValue={initial?.metaTitle ?? ""}
+              maxLength={120}
+              placeholder="Boş bırakılırsa ürün adı kullanılır"
+            />
+            {errFor("metaTitle") && (
+              <p className="text-xs text-danger">{errFor("metaTitle")}</p>
+            )}
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="metaDescription">SEO açıklaması (opsiyonel)</Label>
+            <Textarea
+              id="metaDescription"
+              name="metaDescription"
+              rows={2}
+              defaultValue={initial?.metaDescription ?? ""}
+              maxLength={320}
+              placeholder="Arama sonuçlarında görünecek metin. Boşsa kısa açıklama kullanılır."
+            />
+            {errFor("metaDescription") && (
+              <p className="text-xs text-danger">{errFor("metaDescription")}</p>
+            )}
+          </div>
           <div className="space-y-1.5">
             <Label htmlFor="categoryId">Kategori</Label>
             <Select id="categoryId" name="categoryId" defaultValue={initial?.categoryId ?? ""} required>

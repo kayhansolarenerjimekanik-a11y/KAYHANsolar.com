@@ -31,12 +31,14 @@ export async function generateMetadata({
   const { slug } = await params;
   const product = await repo.getProductBySlug(slug);
   if (!product) return { title: "Ürün bulunamadı" };
+  const title = product.metaTitle ?? product.name;
+  const description = product.metaDescription ?? product.shortDescription;
   return {
-    title: product.name,
-    description: product.shortDescription,
+    title,
+    description,
     openGraph: {
-      title: product.name,
-      description: product.shortDescription,
+      title,
+      description,
       images: product.media[0]?.url
         ? [{ url: product.media[0].url, alt: product.name }]
         : undefined,

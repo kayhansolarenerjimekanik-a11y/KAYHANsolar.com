@@ -50,6 +50,8 @@ export interface Product {
   isFeatured: boolean;
   isNewArrival: boolean;
   media: ProductMedia[];
+  metaTitle?: string;
+  metaDescription?: string;
   createdAt: string;
 }
 

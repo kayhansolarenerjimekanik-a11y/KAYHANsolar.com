@@ -87,6 +87,8 @@ export async function createProductAction(
     markupPercentage: result.markupPercentage || undefined,
     brand: result.brand || undefined,
     longDescription: result.longDescription || undefined,
+    metaTitle: result.metaTitle || undefined,
+    metaDescription: result.metaDescription || undefined,
   });
   revalidateCatalog(created.slug);
   redirect(`/kayhan-yonetim/urunler`);
@@ -120,6 +122,8 @@ export async function updateProductAction(
     markupPercentage: result.markupPercentage || undefined,
     brand: result.brand || undefined,
     longDescription: result.longDescription || undefined,
+    metaTitle: result.metaTitle || undefined,
+    metaDescription: result.metaDescription || undefined,
   });
 
   if (wasOutOfStock && updated.stockQuantity > 0) {

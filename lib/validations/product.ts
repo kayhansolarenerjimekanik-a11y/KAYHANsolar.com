@@ -25,6 +25,8 @@ export const productInputSchema = z.object({
   name: z.string().min(2, "Ürün adı zorunlu"),
   shortDescription: z.string().min(5, "Kısa açıklama zorunlu").max(160),
   longDescription: z.string().optional(),
+  metaTitle: z.string().max(120).optional(),
+  metaDescription: z.string().max(320).optional(),
   technicalSpecs: z.record(z.string(), z.string()).optional(),
   categoryId: z.string().min(1, "Kategori seçin"),
   brand: z.string().optional(),
