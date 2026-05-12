@@ -14,6 +14,7 @@ interface ProductLightboxProps {
   isOpen: boolean;
   onClose: () => void;
   productName: string;
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
 }
 
 export function ProductLightbox({
@@ -23,6 +24,7 @@ export function ProductLightbox({
   isOpen,
   onClose,
   productName,
+  returnFocusRef,
 }: ProductLightboxProps) {
   const closeBtnRef = useRef<HTMLButtonElement>(null);
   const touchStartX = useRef<number | null>(null);
@@ -34,8 +36,9 @@ export function ProductLightbox({
     closeBtnRef.current?.focus();
     return () => {
       document.body.style.overflow = prevOverflow;
+      returnFocusRef?.current?.focus();
     };
-  }, [isOpen]);
+  }, [isOpen, returnFocusRef]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -64,6 +67,11 @@ export function ProductLightbox({
   const hasNext = activeIndex < media.length - 1;
 
   function handleTouchStart(e: React.TouchEvent) {
+    const target = e.target as HTMLElement;
+    if (target.closest("video")) {
+      touchStartX.current = null;
+      return;
+    }
     touchStartX.current = e.touches[0].clientX;
   }
   function handleTouchEnd(e: React.TouchEvent) {

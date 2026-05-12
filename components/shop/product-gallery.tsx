@@ -16,6 +16,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const touchStartX = useRef<number | null>(null);
+  const mainImageRef = useRef<HTMLDivElement>(null);
 
   if (media.length === 0) {
     return (
@@ -26,6 +27,11 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
   const activeMedia = media[activeIndex];
 
   function handleTouchStart(e: React.TouchEvent) {
+    const target = e.target as HTMLElement;
+    if (target.closest("video")) {
+      touchStartX.current = null;
+      return;
+    }
     touchStartX.current = e.touches[0].clientX;
   }
   function handleTouchEnd(e: React.TouchEvent) {
@@ -56,6 +62,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
   return (
     <div className="flex flex-col gap-3">
       <div
+        ref={mainImageRef}
         role={activeMedia.type === "image" ? "button" : undefined}
         tabIndex={0}
         aria-label={
@@ -128,6 +135,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
         isOpen={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
         productName={productName}
+        returnFocusRef={mainImageRef}
       />
     </div>
   );
