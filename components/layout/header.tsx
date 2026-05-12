@@ -86,7 +86,9 @@ export function Header() {
           <Link
             href="/sepet"
             aria-label={
-              cartCount > 0 ? `Sepet — ${cartCount} ürün` : "Sepet"
+              isHydrated && cartCount > 0
+                ? `Sepet — ${cartCount} ürün`
+                : "Sepet"
             }
             className="relative grid h-9 w-9 place-items-center rounded-full border border-border text-muted hover:text-foreground"
           >
