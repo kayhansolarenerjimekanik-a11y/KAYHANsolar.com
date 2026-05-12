@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function GlobalError({
@@ -42,12 +43,12 @@ export default function GlobalError({
             >
               Tekrar Dene
             </button>
-            <a
+            <Link
               href="/"
               className="rounded-xl border border-zinc-700 px-4 py-2 text-sm font-semibold text-zinc-200 hover:border-zinc-500"
             >
               Anasayfa
-            </a>
+            </Link>
           </div>
         </div>
       </body>
