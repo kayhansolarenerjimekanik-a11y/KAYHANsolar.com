@@ -33,8 +33,9 @@ export default function AyarlarPage() {
         <div className="rounded-2xl border border-dashed border-border bg-elevated p-5 text-sm text-muted">
           <p>
             <span className="font-semibold text-foreground">Yakında:</span>{" "}
-            Hesap bilgileri, bildirim tercihleri, çerez yönetimi ve KVKK
-            ayarları Faz 3 ve Faz 5&apos;te aktive edilecek.
+            Müşteri hesabı, sipariş geçmişi ve detaylı bildirim ayarları
+            production deploy&apos;unda (Faz 6) aktif olacak. KVKK / çerez
+            tercihlerini şimdilik footer&apos;daki çerez bannerından yönetebilirsiniz.
           </p>
         </div>
       </div>

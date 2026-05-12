@@ -23,7 +23,7 @@ export default async function GalleryPage() {
         </h1>
         <p className="max-w-2xl text-muted">
           Konut, tarım ve işletme için tamamladığımız sistemlerden örnekler.
-          Detaylı proje sayfaları Faz 4&apos;te eklenecek.
+          Detaylı incelemek için kart üzerine tıklayın.
         </p>
       </header>
 

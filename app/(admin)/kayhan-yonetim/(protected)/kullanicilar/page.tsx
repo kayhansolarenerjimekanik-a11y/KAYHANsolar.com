@@ -46,7 +46,7 @@ export default async function AdminUsersPage() {
       </Table>
 
       <div className="rounded-2xl border border-dashed border-border bg-elevated p-5 text-sm text-muted">
-        <p className="font-semibold text-foreground">Faz 3D / Faz 6&apos;da gelecek:</p>
+        <p className="font-semibold text-foreground">Production deploy (Faz 6) sonrası gelecek:</p>
         <ul className="mt-2 list-inside list-disc space-y-1">
           <li>Yeni moderatör/asistan kullanıcı davet et</li>
           <li>Rol değiştir (admin / moderator / assistant)</li>
