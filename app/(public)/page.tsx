@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CampaignSlider } from "@/components/home/campaign-slider";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { FeaturedProducts } from "@/components/home/featured-products";
+import { GalleryShowcase } from "@/components/home/gallery-showcase";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 
@@ -96,6 +97,8 @@ export default function HomePage() {
       <CampaignSlider />
 
       <CategoryGrid />
+
+      <GalleryShowcase />
 
       <FeaturedProducts />
 
