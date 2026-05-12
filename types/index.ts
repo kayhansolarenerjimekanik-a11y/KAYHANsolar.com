@@ -66,6 +66,9 @@ export interface Campaign {
   title: string;
   description?: string;
   bannerImageUrl?: string;
+  coverImageUrl?: string;
+  ctaLabel?: string;
+  ctaSecondaryLabel?: string;
   ruleType: CampaignRuleType;
   ruleConfig: Record<string, unknown>;
   applicableTo: "all" | "category" | "product";
