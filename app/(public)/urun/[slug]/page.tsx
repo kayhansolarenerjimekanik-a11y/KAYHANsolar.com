@@ -4,9 +4,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCart } from "@/components/shop/add-to-cart";
+import { MobileBuyBar } from "@/components/shop/mobile-buy-bar";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductBadgeChip } from "@/components/shop/product-badge";
 import { ProductGallery } from "@/components/shop/product-gallery";
+import { ShareActions } from "@/components/shop/share-actions";
 import { StockStatus } from "@/components/shop/stock-status";
 import { Container } from "@/components/ui/container";
 import { ProductJsonLd } from "@/components/seo/product-jsonld";
@@ -44,13 +46,14 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const [product, settings] = await Promise.all([
+  const [product, settings, categories, allProducts] = await Promise.all([
     repo.getProductBySlug(slug),
     repo.getSettings(),
+    repo.listCategories(),
+    repo.listProducts(),
   ]);
   if (!product) notFound();
 
-  // Best-effort analytics — never throws.
   recordEvent({
     type: "product_view",
     pageUrl: `/urun/${product.slug}`,
@@ -59,7 +62,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
     /* analytics must never break the page */
   });
 
-  const categories = await repo.listCategories();
   const category = categories.find((c) => c.id === product.categoryId);
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.currentPrice;
@@ -71,7 +73,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
       )
     : 0;
 
-  const allProducts = await repo.listProducts();
   const related = allProducts
     .filter(
       (p) =>
@@ -81,12 +82,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
     )
     .slice(0, 4);
 
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ?? "https://kayhansolar.com";
+  const absoluteUrl = `${siteUrl}/urun/${product.slug}`;
+
   return (
     <Container className="py-8 lg:py-14">
-      <ProductJsonLd
-        product={product}
-        url={`${process.env.NEXT_PUBLIC_SITE_URL ?? "https://kayhansolar.com"}/urun/${product.slug}`}
-      />
+      <ProductJsonLd product={product} url={absoluteUrl} />
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 text-xs text-muted"
@@ -137,7 +139,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
             )}
           </div>
 
-          <div className="rounded-2xl border border-border bg-surface p-5">
+          <div
+            id="buy-section"
+            className="rounded-2xl border border-border bg-surface p-5"
+          >
             <div className="flex items-baseline gap-3">
               <span className="text-3xl font-semibold tracking-tight">
                 {formatPrice(product.currentPrice)}
@@ -166,6 +171,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
               />
             </div>
           </div>
+
+          <ShareActions productName={product.name} url={absoluteUrl} />
 
           {product.technicalSpecs &&
             Object.keys(product.technicalSpecs).length > 0 && (
@@ -214,6 +221,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
         </section>
       )}
+
+      <MobileBuyBar product={product} targetSelector="#buy-section" />
     </Container>
   );
 }
