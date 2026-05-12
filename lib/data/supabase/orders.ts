@@ -39,13 +39,17 @@ export async function createOrder(data: Omit<Order, "id" | "orderNumber" | "crea
     .single();
   if (error) throw error;
   const order = rowToOrder(row);
-  await pushNotification({
-    type: "new_order",
-    title: "Yeni Sipariş",
-    message: `${order.orderNumber} — ${order.total.toLocaleString("tr-TR")} ₺`,
-    relatedId: order.id,
-    relatedType: "order",
-  });
+  try {
+    await pushNotification({
+      type: "new_order",
+      title: "Yeni Sipariş",
+      message: `${order.orderNumber} — ${order.total.toLocaleString("tr-TR")} ₺`,
+      relatedId: order.id,
+      relatedType: "order",
+    });
+  } catch (err) {
+    console.error("[orders] pushNotification failed", err);
+  }
   return order;
 }
 

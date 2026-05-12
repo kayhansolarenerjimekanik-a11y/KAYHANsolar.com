@@ -56,6 +56,14 @@ export function checkOfferRateLimit(phone: string): RateLimitResult {
   });
 }
 
+export function checkOrderRateLimit(phone: string): RateLimitResult {
+  const normalized = phone.replace(/\D/g, "");
+  return checkLimit(`order:${normalized}`, {
+    windowMs: 60 * 60 * 1000,
+    max: 5,
+  });
+}
+
 export function checkStockSubscribeRateLimit(ip: string): RateLimitResult {
   return checkLimit(`stocksub:${ip}`, {
     windowMs: 60 * 60 * 1000,

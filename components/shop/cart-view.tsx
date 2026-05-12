@@ -69,7 +69,7 @@ export function CartView({
       data,
     );
     try {
-      await fetch("/api/orders", {
+      const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,6 +95,9 @@ export function CartView({
           },
         }),
       });
+      if (!res.ok) {
+        console.warn("[cart] order persistence returned status", res.status);
+      }
     } catch (err) {
       console.warn("[cart] order persistence failed; opening WhatsApp anyway", err);
     } finally {
