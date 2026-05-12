@@ -1,6 +1,8 @@
+import { Plus } from "lucide-react";
 import Link from "next/link";
 
 import { OfferStatusPill } from "@/components/admin/offer-status-pill";
+import { Button } from "@/components/ui/button";
 import { TBody, TD, TH, THead, TR, Table } from "@/components/ui/table";
 import { repo } from "@/lib/data";
 import type { OfferStatus } from "@/lib/data/types";
@@ -37,9 +39,17 @@ export default async function AdminOffersPage({ searchParams }: Props) {
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Teklifler</h1>
-        <p className="mt-1 text-sm text-muted">{all.length} toplam</p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Teklifler</h1>
+          <p className="mt-1 text-sm text-muted">{all.length} toplam</p>
+        </div>
+        <Link href="/kayhan-yonetim/teklifler/yeni">
+          <Button size="sm" variant="primary">
+            <Plus className="h-4 w-4" strokeWidth={2.4} />
+            Yeni Teklif
+          </Button>
+        </Link>
       </header>
 
       <nav

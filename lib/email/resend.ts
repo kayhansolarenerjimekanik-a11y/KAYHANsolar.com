@@ -74,3 +74,30 @@ export async function sendOrderStatusEmail(
     html,
   });
 }
+
+export async function sendOfferResponseEmail(
+  offer: Offer,
+  adminResponse: string,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!offer.email) return { ok: false, error: "Müşteri e-postası yok" };
+  const { renderOfferResponseEmail } = await import("./templates/offer-response");
+  const html = renderOfferResponseEmail(offer, adminResponse);
+  return send({
+    to: offer.email,
+    subject: "Teklif Yanıtınız — KAYHAN Solar",
+    html,
+  });
+}
+
+export async function sendOfferCreatedEmail(
+  offer: Offer,
+): Promise<{ ok: boolean; error?: string }> {
+  if (!offer.email) return { ok: false, error: "Müşteri e-postası yok" };
+  const { renderOfferCreatedEmail } = await import("./templates/offer-created");
+  const html = renderOfferCreatedEmail(offer);
+  return send({
+    to: offer.email,
+    subject: "Talebiniz Alındı — KAYHAN Solar",
+    html,
+  });
+}
