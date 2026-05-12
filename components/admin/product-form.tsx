@@ -2,7 +2,7 @@
 
 import { Save } from "lucide-react";
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { MediaListEditor } from "@/components/admin/media-list-editor";
 import { SpecsEditor } from "@/components/admin/specs-editor";
@@ -38,6 +38,14 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
     action,
     {},
   );
+
+  const [selectedBadges, setSelectedBadges] = useState<ProductBadge[]>(
+    initial?.badges ?? [],
+  );
+  const toggleBadge = (b: ProductBadge) =>
+    setSelectedBadges((cur) =>
+      cur.includes(b) ? cur.filter((x) => x !== b) : [...cur, b],
+    );
 
   const errFor = (field: string) => state.fieldErrors?.[field];
 
@@ -200,9 +208,8 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
                 <label key={b.value} className="inline-flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
-                    name="badges_options"
-                    value={b.value}
-                    defaultChecked={initial?.badges?.includes(b.value)}
+                    checked={selectedBadges.includes(b.value)}
+                    onChange={() => toggleBadge(b.value)}
                     className="h-4 w-4 accent-lime-primary"
                   />
                   {b.label}
@@ -212,19 +219,7 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
             <input
               type="hidden"
               name="badges"
-              defaultValue={JSON.stringify(initial?.badges ?? [])}
-            />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `(function(){
-                  const form = document.currentScript.closest('form');
-                  if (!form) return;
-                  const hidden = form.querySelector('input[name="badges"]');
-                  const boxes = form.querySelectorAll('input[name="badges_options"]');
-                  const sync = () => { hidden.value = JSON.stringify(Array.from(boxes).filter(b=>b.checked).map(b=>b.value)); };
-                  boxes.forEach(b => b.addEventListener('change', sync));
-                })();`,
-              }}
+              value={JSON.stringify(selectedBadges)}
             />
           </fieldset>
 
