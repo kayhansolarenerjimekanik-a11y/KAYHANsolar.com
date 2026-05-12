@@ -87,12 +87,14 @@ export function CampaignForm({ initial, categories, action, submitLabel }: Campa
             {coverPreview && (
               <div className="mt-2 overflow-hidden rounded-xl border border-border bg-elevated">
                 {coverError ? (
-                  <div className="p-4 text-xs text-danger">Görsel yüklenemedi (URL kontrol edin)</div>
+                  <div role="alert" className="p-4 text-xs text-danger">
+                    Görsel yüklenemedi (URL kontrol edin)
+                  </div>
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={coverPreview}
-                    alt="Cover önizleme"
+                    alt="Kapak görseli önizleme"
                     className="aspect-[16/9] w-full object-cover"
                     onError={() => setCoverError(true)}
                   />
@@ -101,7 +103,7 @@ export function CampaignForm({ initial, categories, action, submitLabel }: Campa
             )}
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ctaLabel">Primary CTA metni</Label>
+            <Label htmlFor="ctaLabel">Birincil buton metni</Label>
             <Input
               id="ctaLabel"
               name="ctaLabel"
@@ -112,7 +114,7 @@ export function CampaignForm({ initial, categories, action, submitLabel }: Campa
             <p className="text-xs text-muted">Boş ise &quot;Detayları Gör&quot; gösterilir.</p>
           </div>
           <div className="space-y-1.5">
-            <Label htmlFor="ctaSecondaryLabel">İkincil CTA metni (opsiyonel)</Label>
+            <Label htmlFor="ctaSecondaryLabel">İkincil buton metni (opsiyonel)</Label>
             <Input
               id="ctaSecondaryLabel"
               name="ctaSecondaryLabel"
