@@ -1,7 +1,7 @@
 import { ArrowRight, Sparkles, Sun, Zap } from "lucide-react";
 import Link from "next/link";
 
-import { CampaignStrip } from "@/components/home/campaign-strip";
+import { CampaignSlider } from "@/components/home/campaign-slider";
 import { CategoryGrid } from "@/components/home/category-grid";
 import { FeaturedProducts } from "@/components/home/featured-products";
 import { Button } from "@/components/ui/button";
@@ -93,7 +93,7 @@ export default function HomePage() {
         </Container>
       </section>
 
-      <CampaignStrip />
+      <CampaignSlider />
 
       <CategoryGrid />
 
