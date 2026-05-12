@@ -10,7 +10,11 @@ import { StepSystem } from "./step-system";
 import { StepWelcome } from "./step-welcome";
 import { useWizardState } from "./use-wizard-state";
 
-export function WizardShell() {
+interface Props {
+  whatsappNumber: string | null;
+}
+
+export function WizardShell({ whatsappNumber }: Props) {
   const wizard = useWizardState();
 
   if (!wizard.hydrated) {
@@ -64,7 +68,13 @@ export function WizardShell() {
             onSuccess={() => wizard.setStep("success")}
           />
         )}
-        {wizard.step === "success" && <StepSuccess onReset={wizard.reset} />}
+        {wizard.step === "success" && (
+          <StepSuccess
+            onReset={wizard.reset}
+            whatsappNumber={whatsappNumber}
+            customerName={wizard.data.fullName}
+          />
+        )}
       </div>
     </Container>
   );
