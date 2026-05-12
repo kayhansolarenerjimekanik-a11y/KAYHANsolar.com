@@ -48,21 +48,23 @@ export function CampaignSliderClient({ slides }: Props) {
     };
   }, [next, slides.length, paused]);
 
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "ArrowLeft") prev();
-      if (e.key === "ArrowRight") next();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev]);
-
   return (
     <div
-      className="relative isolate overflow-hidden rounded-3xl border border-border bg-elevated"
+      className="relative isolate overflow-hidden rounded-3xl border border-border bg-elevated outline-none focus-visible:ring-2 focus-visible:ring-lime-primary"
+      tabIndex={0}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onKeyDown={(e) => {
+        if (e.key === "ArrowLeft") {
+          e.preventDefault();
+          prev();
+        } else if (e.key === "ArrowRight") {
+          e.preventDefault();
+          next();
+        }
+      }}
       aria-roledescription="carousel"
+      aria-label="Kampanyalar"
     >
       <div className="relative aspect-[16/7] sm:aspect-[16/6] lg:aspect-[16/5]">
         {slides.map((slide, i) => (
@@ -71,6 +73,9 @@ export function CampaignSliderClient({ slides }: Props) {
             className={`absolute inset-0 transition-opacity duration-700 ${
               i === index ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
+            role="group"
+            aria-roledescription="slide"
+            aria-label={`${i + 1} / ${slides.length}`}
             aria-hidden={i !== index}
           >
             <Image
@@ -139,6 +144,7 @@ export function CampaignSliderClient({ slides }: Props) {
                 key={s.id}
                 type="button"
                 aria-label={`Slayt ${i + 1}`}
+                aria-current={i === index ? "true" : undefined}
                 onClick={() => setIndex(i)}
                 className={`h-1.5 rounded-full transition-all ${
                   i === index ? "w-8 bg-white" : "w-2 bg-white/50 hover:bg-white/80"
