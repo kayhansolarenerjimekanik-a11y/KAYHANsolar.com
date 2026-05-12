@@ -5,6 +5,9 @@ export const campaignInputSchema = z.object({
   title: z.string().min(3, "Başlık zorunlu"),
   description: z.string().optional(),
   bannerImageUrl: z.string().url().optional().or(z.literal("")),
+  coverImageUrl: z.string().url().optional().or(z.literal("")),
+  ctaLabel: z.string().max(40).optional().or(z.literal("")),
+  ctaSecondaryLabel: z.string().max(40).optional().or(z.literal("")),
   ruleType: z.enum([
     "percent_off",
     "buy_x_get_y_discount",

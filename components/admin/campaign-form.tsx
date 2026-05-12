@@ -35,6 +35,8 @@ export function CampaignForm({ initial, categories, action, submitLabel }: Campa
   const [ruleConfig, setRuleConfig] = useState<string>(
     JSON.stringify(initial?.ruleConfig ?? {}, null, 2),
   );
+  const [coverPreview, setCoverPreview] = useState<string>(initial?.coverImageUrl ?? "");
+  const [coverError, setCoverError] = useState(false);
 
   return (
     <form action={formAction} className="space-y-6">
@@ -56,6 +58,69 @@ export function CampaignForm({ initial, categories, action, submitLabel }: Campa
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="description">Açıklama</Label>
             <Textarea id="description" name="description" rows={2} defaultValue={initial?.description ?? ""} />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-surface p-5">
+        <h2 className="text-sm font-semibold tracking-tight">Görsel & CTA (Anasayfa Slider)</h2>
+        <p className="mt-1 text-xs text-muted">
+          Bu alanlar dolu ise kampanya anasayfa slider&apos;ında görsel olarak gösterilir.
+          Cover görsel boş ise slider&apos;da hiç görünmez.
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="coverImageUrl">Cover görseli (tam genişlik URL)</Label>
+            <Input
+              id="coverImageUrl"
+              name="coverImageUrl"
+              defaultValue={initial?.coverImageUrl ?? ""}
+              placeholder="https://picsum.photos/seed/kampanya/1600/900"
+              onChange={(e) => {
+                setCoverPreview(e.target.value);
+                setCoverError(false);
+              }}
+            />
+            <p className="text-xs text-muted">
+              Önerilen oran 16:9 (örn. 1600x900). Boş ise anasayfada gösterilmez.
+            </p>
+            {coverPreview && (
+              <div className="mt-2 overflow-hidden rounded-xl border border-border bg-elevated">
+                {coverError ? (
+                  <div className="p-4 text-xs text-danger">Görsel yüklenemedi (URL kontrol edin)</div>
+                ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={coverPreview}
+                    alt="Cover önizleme"
+                    className="aspect-[16/9] w-full object-cover"
+                    onError={() => setCoverError(true)}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="ctaLabel">Primary CTA metni</Label>
+            <Input
+              id="ctaLabel"
+              name="ctaLabel"
+              defaultValue={initial?.ctaLabel ?? ""}
+              placeholder="Hemen İncele"
+              maxLength={40}
+            />
+            <p className="text-xs text-muted">Boş ise &quot;Detayları Gör&quot; gösterilir.</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label htmlFor="ctaSecondaryLabel">İkincil CTA metni (opsiyonel)</Label>
+            <Input
+              id="ctaSecondaryLabel"
+              name="ctaSecondaryLabel"
+              defaultValue={initial?.ctaSecondaryLabel ?? ""}
+              placeholder="Tüm Kampanyalar"
+              maxLength={40}
+            />
+            <p className="text-xs text-muted">Boş ise ikinci buton hiç görünmez.</p>
           </div>
         </div>
       </section>

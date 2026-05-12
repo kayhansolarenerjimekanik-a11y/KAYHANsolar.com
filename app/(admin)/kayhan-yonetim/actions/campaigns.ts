@@ -46,6 +46,9 @@ function parse(formData: FormData) {
     title: formData.get("title"),
     description: formData.get("description") || undefined,
     bannerImageUrl: formData.get("bannerImageUrl") || undefined,
+    coverImageUrl: formData.get("coverImageUrl") || undefined,
+    ctaLabel: formData.get("ctaLabel") || undefined,
+    ctaSecondaryLabel: formData.get("ctaSecondaryLabel") || undefined,
     ruleType: formData.get("ruleType"),
     ruleConfig,
     applicableTo: formData.get("applicableTo") ?? "all",
@@ -71,6 +74,9 @@ export async function createCampaignAction(
     ...parsed.data,
     description: parsed.data.description || undefined,
     bannerImageUrl: parsed.data.bannerImageUrl || undefined,
+    coverImageUrl: parsed.data.coverImageUrl || undefined,
+    ctaLabel: parsed.data.ctaLabel || undefined,
+    ctaSecondaryLabel: parsed.data.ctaSecondaryLabel || undefined,
     endDate: parsed.data.endDate || undefined,
   });
   bust(created.slug);
@@ -91,6 +97,9 @@ export async function updateCampaignAction(
     ...parsed.data,
     description: parsed.data.description || undefined,
     bannerImageUrl: parsed.data.bannerImageUrl || undefined,
+    coverImageUrl: parsed.data.coverImageUrl || undefined,
+    ctaLabel: parsed.data.ctaLabel || undefined,
+    ctaSecondaryLabel: parsed.data.ctaSecondaryLabel || undefined,
     endDate: parsed.data.endDate || undefined,
   });
   bust(updated.slug);
