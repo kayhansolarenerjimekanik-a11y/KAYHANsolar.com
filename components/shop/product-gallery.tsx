@@ -95,7 +95,7 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
             src={activeMedia.url}
             poster={activeMedia.thumbnailUrl}
             controls
-            className="h-full w-full object-cover"
+            className="h-full w-full object-contain"
           />
         ) : null}
       </div>

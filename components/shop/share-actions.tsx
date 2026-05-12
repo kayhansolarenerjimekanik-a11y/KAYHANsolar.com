@@ -67,6 +67,7 @@ export function ShareActions({ productName, url }: ShareActionsProps) {
         </Button>
       )}
 
+      {/* Bilerek mounted gate'i YOK — saf bir <a> linki, JS olmadan da çalışmalı (progressive enhancement). */}
       <Link href={whatsappShareUrl} target="_blank" rel="noopener noreferrer">
         <Button variant="outline" size="sm">
           WhatsApp

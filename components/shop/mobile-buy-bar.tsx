@@ -55,7 +55,7 @@ export function MobileBuyBar({ product, targetSelector }: MobileBuyBarProps) {
     if (!section) return;
     section.scrollIntoView({ behavior: "smooth", block: "center" });
     const focusTarget = section.querySelector<HTMLElement>(
-      'button, [href], input, [tabindex]:not([tabindex="-1"])',
+      'button:not([disabled]), [href]:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
     );
     focusTarget?.focus({ preventScroll: true });
   }

@@ -54,6 +54,28 @@ export function ProductLightbox({
       } else if (e.key === "ArrowRight" && activeIndex < media.length - 1) {
         e.preventDefault();
         onActiveIndexChange(activeIndex + 1);
+      } else if (e.key === "Tab") {
+        const dialog = closeBtnRef.current?.closest('[role="dialog"]');
+        if (!dialog) return;
+        const focusables = Array.from(
+          dialog.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), [href]:not([disabled])',
+          ),
+        );
+        if (focusables.length === 0) return;
+        const active = document.activeElement as HTMLElement | null;
+        const idx = active ? focusables.indexOf(active) : -1;
+        if (e.shiftKey) {
+          if (idx <= 0) {
+            e.preventDefault();
+            focusables[focusables.length - 1].focus();
+          }
+        } else {
+          if (idx === focusables.length - 1) {
+            e.preventDefault();
+            focusables[0].focus();
+          }
+        }
       }
     }
     window.addEventListener("keydown", onKey);
@@ -103,22 +125,22 @@ export function ProductLightbox({
       </button>
 
       <div className="flex h-full w-full items-center justify-center p-6">
-        <div className="relative max-h-[80vh] max-w-[90vw]">
+        <div className="relative h-[80vh] w-[90vw]">
           {current.type === "image" ? (
             <Image
               src={current.url}
               alt={current.altText ?? productName}
-              width={1600}
-              height={1600}
-              className="max-h-[80vh] w-auto object-contain"
+              fill
+              sizes="90vw"
               priority
+              className="object-contain"
             />
           ) : current.type === "video" ? (
             <video
               src={current.url}
               poster={current.thumbnailUrl}
               controls
-              className="max-h-[80vh] w-auto object-contain"
+              className="h-full w-full object-contain"
             />
           ) : null}
         </div>
