@@ -1,10 +1,18 @@
 import { z } from "zod";
 
+const httpsUrl = z
+  .string()
+  .url()
+  .refine((v) => /^https?:\/\//i.test(v), "URL http:// veya https:// ile başlamalı");
+
 export const campaignInputSchema = z.object({
   slug: z.string().min(2).regex(/^[a-z0-9-]+$/),
   title: z.string().min(3, "Başlık zorunlu"),
   description: z.string().optional(),
-  bannerImageUrl: z.string().url().optional().or(z.literal("")),
+  bannerImageUrl: httpsUrl.optional().or(z.literal("")),
+  coverImageUrl: httpsUrl.optional().or(z.literal("")),
+  ctaLabel: z.string().max(40).optional().or(z.literal("")),
+  ctaSecondaryLabel: z.string().max(40).optional().or(z.literal("")),
   ruleType: z.enum([
     "percent_off",
     "buy_x_get_y_discount",
