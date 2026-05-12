@@ -58,14 +58,49 @@ export function CartView({
     mode: "onBlur",
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const onSubmit = handleSubmit(async (data) => {
+    setSubmitting(true);
     const link = buildOrderWhatsAppLink(
       settings.whatsappNumber,
       items,
       calc.total - calc.shippingCost,
       data,
     );
-    window.open(link, "_blank", "noopener,noreferrer");
+    try {
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items.map((i) => ({
+            productId: i.productId,
+            name: i.name,
+            brand: i.brand,
+            price: i.price,
+            quantity: i.quantity,
+            imageUrl: i.imageUrl,
+          })),
+          subtotal: calc.subtotal,
+          shippingCost: calc.shippingCost,
+          total: calc.total,
+          discountAmount: calc.totalDiscount,
+          appliedCampaignIds: calc.appliedCampaigns.map((a) => a.campaignId),
+          customerName: data.fullName,
+          customerPhone: data.phone,
+          shippingAddress: {
+            city: data.city,
+            district: data.district,
+            detailedAddress: data.detailedAddress,
+          },
+        }),
+      });
+    } catch (err) {
+      console.warn("[cart] order persistence failed; opening WhatsApp anyway", err);
+    } finally {
+      window.open(link, "_blank", "noopener,noreferrer");
+      setSubmitting(false);
+    }
   });
 
   if (!isHydrated) {
@@ -331,9 +366,9 @@ export function CartView({
                   variant="primary"
                   size="lg"
                   className="w-full"
-                  disabled={!formState.isValid}
+                  disabled={!formState.isValid || submitting}
                 >
-                  WhatsApp ile Siparişi Tamamla
+                  {submitting ? "Gönderiliyor..." : "WhatsApp ile Siparişi Tamamla"}
                 </Button>
                 <Button
                   type="button"
