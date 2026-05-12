@@ -88,6 +88,8 @@ const seedOrders: Order[] = [
     subtotal: 13800,
     shippingCost: 500,
     total: 14300,
+    discountAmount: 0,
+    appliedCampaignIds: [],
     customerName: "Hasan Öztürk",
     customerPhone: "+90 555 444 55 66",
     customerEmail: "hasan@example.com",

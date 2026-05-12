@@ -36,6 +36,8 @@ export interface Order {
   subtotal: number;
   shippingCost: number;
   total: number;
+  discountAmount: number;
+  appliedCampaignIds: string[];
   customerName: string;
   customerPhone: string;
   customerEmail?: string;

@@ -13,7 +13,11 @@ function fmt(iso: string): string {
 }
 
 export default async function AdminOrdersPage() {
-  const orders = await repo.listOrders();
+  const [orders, campaigns] = await Promise.all([
+    repo.listOrders(),
+    repo.listCampaigns(),
+  ]);
+  const campaignTitleById = new Map(campaigns.map((c) => [c.id, c.title]));
   return (
     <div className="space-y-6">
       <header>
@@ -50,6 +54,20 @@ export default async function AdminOrdersPage() {
                 </TD>
                 <TD className="text-right tabular-nums">
                   {formatPrice(o.total)}
+                  {o.discountAmount > 0 && (
+                    <p className="text-xs font-medium text-success">
+                      −{formatPrice(o.discountAmount)}
+                      {o.appliedCampaignIds.length > 0 && (
+                        <span className="ml-1 text-subtle">
+                          (
+                          {o.appliedCampaignIds
+                            .map((id) => campaignTitleById.get(id) ?? "kampanya")
+                            .join(", ")}
+                          )
+                        </span>
+                      )}
+                    </p>
+                  )}
                 </TD>
                 <TD>
                   <OrderStatusControl orderId={o.id} current={o.status} />
