@@ -102,7 +102,7 @@ Yeni iskelet:
 - 3 buton: **Anasayfa**, **Mağazaya Göz At** (`/magaza`), **WhatsApp'la İletişim** (site ayarındaki numara, varsa).
 - Altta "Yeni bir teklif daha gönder" linki (mevcut).
 
-WhatsApp numarası **site ayarlarından** (`repo.getSiteSettings()`) çekilir. Numara boşsa buton gizlenir.
+WhatsApp numarası **site ayarlarından** (`repo.getSettings()`) çekilir. Numara boşsa buton gizlenir.
 
 ### 4.2 Settings prop akışı
 
@@ -111,7 +111,7 @@ WhatsApp numarası **site ayarlarından** (`repo.getSiteSettings()`) çekilir. N
 ```tsx
 // app/(public)/teklif-al/page.tsx
 export default async function TeklifAlPage() {
-  const settings = await repo.getSiteSettings();
+  const settings = await repo.getSettings();
   return <WizardShell whatsappNumber={settings.whatsappNumber ?? null} />;
 }
 ```
