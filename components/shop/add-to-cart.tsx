@@ -2,21 +2,23 @@
 
 import { Bell, Mail, Minus, Plus, ShoppingCart } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { mockSiteSettings } from "@/lib/mock/data";
 import { buildQuickOrderLink } from "@/lib/whatsapp";
 import { useCart } from "@/store/cart";
 import type { Product } from "@/types";
 
 interface AddToCartProps {
   product: Product;
+  whatsappNumber: string;
 }
 
-export function AddToCart({ product }: AddToCartProps) {
+export function AddToCart({ product, whatsappNumber }: AddToCartProps) {
+  const router = useRouter();
   const [quantity, setQuantity] = useState(1);
   const addItem = useCart((s) => s.addItem);
   const inStock = product.stockQuantity > 0;
@@ -36,15 +38,13 @@ export function AddToCart({ product }: AddToCartProps) {
       description: `${quantity} × ${product.name}`,
       action: {
         label: "Sepete Git",
-        onClick: () => {
-          window.location.href = "/sepet";
-        },
+        onClick: () => router.push("/sepet"),
       },
     });
   };
 
   const whatsappLink = buildQuickOrderLink(
-    mockSiteSettings.whatsappNumber,
+    whatsappNumber,
     product.name,
     product.currentPrice,
   );

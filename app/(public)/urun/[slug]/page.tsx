@@ -44,7 +44,10 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  const product = await repo.getProductBySlug(slug);
+  const [product, settings] = await Promise.all([
+    repo.getProductBySlug(slug),
+    repo.getSettings(),
+  ]);
   if (!product) notFound();
 
   // Best-effort analytics — never throws.
@@ -157,7 +160,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
               />
             </div>
             <div className="mt-5">
-              <AddToCart product={product} />
+              <AddToCart
+                product={product}
+                whatsappNumber={settings.whatsappNumber}
+              />
             </div>
           </div>
 

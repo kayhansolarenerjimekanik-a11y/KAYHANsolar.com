@@ -3,14 +3,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { Container } from "@/components/ui/container";
-import { mockSiteSettings } from "@/lib/mock/data";
+import { repo } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "İletişim",
 };
 
-export default function IletisimPage() {
-  const s = mockSiteSettings;
+export default async function IletisimPage() {
+  const s = await repo.getSettings();
   const cleanPhone = s.contactPhone.replace(/\s/g, "");
   const whatsappLink = `https://wa.me/${s.whatsappNumber}`;
 
@@ -72,13 +72,6 @@ export default function IletisimPage() {
         </div>
       </div>
 
-      <section className="mt-12 rounded-3xl border border-dashed border-border bg-elevated p-6 text-sm text-muted">
-        <p>
-          <span className="font-semibold text-foreground">Demo modu:</span>{" "}
-          Yukarıdaki iletişim bilgileri yer tutucudur. Gerçek iletişim
-          bilgileriniz Admin Kontrol Panelinden güncellenecek.
-        </p>
-      </section>
     </Container>
   );
 }
