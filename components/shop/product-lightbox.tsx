@@ -71,7 +71,7 @@ export function ProductLightbox({
             focusables[focusables.length - 1].focus();
           }
         } else {
-          if (idx === focusables.length - 1) {
+          if (idx === focusables.length - 1 || idx === -1) {
             e.preventDefault();
             focusables[0].focus();
           }
