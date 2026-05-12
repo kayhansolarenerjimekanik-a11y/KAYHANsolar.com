@@ -11,13 +11,14 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
-  const [products, categories] = await Promise.all([
+  const [products, categories, campaigns] = await Promise.all([
     repo.listProducts(),
     repo.listCategories(),
+    repo.listCampaigns(),
   ]);
   return (
     <Suspense fallback={<ShopFallback />}>
-      <ShopView products={products} categories={categories} />
+      <ShopView products={products} categories={categories} campaigns={campaigns} />
     </Suspense>
   );
 }

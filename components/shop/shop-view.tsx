@@ -8,7 +8,7 @@ import { Filters, type FiltersState } from "@/components/shop/filters";
 import { ProductCard } from "@/components/shop/product-card";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import type { Category, Product } from "@/types";
+import type { Campaign, Category, Product } from "@/types";
 
 type SortOption = "yeni" | "fiyat-artan" | "fiyat-azalan";
 
@@ -21,9 +21,10 @@ const sortLabels: Record<SortOption, string> = {
 interface ShopViewProps {
   products: Product[];
   categories: Category[];
+  campaigns: Campaign[];
 }
 
-export function ShopView({ products, categories }: ShopViewProps) {
+export function ShopView({ products, categories, campaigns }: ShopViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
@@ -56,6 +57,11 @@ export function ShopView({ products, categories }: ShopViewProps) {
   const sortBy: SortOption =
     (searchParams.get("siralama") as SortOption) || "yeni";
   const query = searchParams.get("q") || "";
+  const campaignSlug = searchParams.get("kampanya");
+  const activeCampaign = useMemo(
+    () => (campaignSlug ? campaigns.find((c) => c.slug === campaignSlug) ?? null : null),
+    [campaignSlug, campaigns],
+  );
 
   const updateUrl = useCallback(
     (updater: (params: URLSearchParams) => void) => {
@@ -125,6 +131,14 @@ export function ShopView({ products, categories }: ShopViewProps) {
   const filtered = useMemo(() => {
     let list = [...products];
 
+    if (activeCampaign) {
+      if (activeCampaign.applicableTo === "product") {
+        list = list.filter((p) => activeCampaign.targetIds.includes(p.id));
+      } else if (activeCampaign.applicableTo === "category") {
+        list = list.filter((p) => activeCampaign.targetIds.includes(p.categoryId));
+      }
+    }
+
     if (filters.categorySlug) {
       const cat = categories.find((c) => c.slug === filters.categorySlug);
       if (cat) list = list.filter((p) => p.categoryId === cat.id);
@@ -156,7 +170,7 @@ export function ShopView({ products, categories }: ShopViewProps) {
     else list.sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 
     return list;
-  }, [filters, query, sortBy, products, categories]);
+  }, [filters, query, sortBy, products, categories, activeCampaign]);
 
   useEffect(() => {
     document.body.style.overflow = mobileFiltersOpen ? "hidden" : "";
@@ -176,6 +190,30 @@ export function ShopView({ products, categories }: ShopViewProps) {
           paket çözümler.
         </p>
       </header>
+
+      {activeCampaign && (
+        <div className="mb-6 rounded-2xl border border-lime-primary/40 bg-lime-primary/5 p-4">
+          <p className="text-sm font-medium text-foreground">
+            Kampanya filtresi:{" "}
+            <span className="text-lime-primary">{activeCampaign.title}</span>
+          </p>
+          {activeCampaign.description && (
+            <p className="mt-1 text-xs text-muted">{activeCampaign.description}</p>
+          )}
+          <button
+            type="button"
+            onClick={() => {
+              const params = new URLSearchParams(searchParams.toString());
+              params.delete("kampanya");
+              const qs = params.toString();
+              router.replace(qs ? `/magaza?${qs}` : "/magaza", { scroll: false });
+            }}
+            className="mt-2 text-xs text-muted underline hover:text-foreground"
+          >
+            Filtreyi kaldır
+          </button>
+        </div>
+      )}
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <div className="hidden w-72 shrink-0 lg:block">

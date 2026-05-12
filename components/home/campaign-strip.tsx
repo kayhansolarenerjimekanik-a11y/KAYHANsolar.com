@@ -5,12 +5,25 @@ import { Container } from "@/components/ui/container";
 import { repo } from "@/lib/data";
 
 export async function CampaignStrip() {
-  const all = await repo.listCampaigns();
-  const active = all.filter(
-    (c) => c.isActive && c.displayOnHomepage,
-  );
-
+  const [campaigns, products, categories] = await Promise.all([
+    repo.listCampaigns(),
+    repo.listProducts(),
+    repo.listCategories(),
+  ]);
+  const active = campaigns.filter((c) => c.isActive && c.displayOnHomepage);
   if (active.length === 0) return null;
+
+  function targetHref(c: (typeof active)[number]): string {
+    if (c.applicableTo === "product" && c.targetIds.length === 1) {
+      const p = products.find((p) => p.id === c.targetIds[0]);
+      if (p) return `/urun/${p.slug}`;
+    }
+    if (c.applicableTo === "category" && c.targetIds.length === 1) {
+      const cat = categories.find((cat) => cat.id === c.targetIds[0]);
+      if (cat) return `/magaza?kategori=${cat.slug}&kampanya=${c.slug}`;
+    }
+    return `/magaza?kampanya=${c.slug}`;
+  }
 
   return (
     <section className="border-t border-border bg-elevated">
@@ -20,12 +33,11 @@ export async function CampaignStrip() {
             <Sparkles className="h-4 w-4 text-lime-primary" strokeWidth={2.2} />
             Güncel Kampanyalar
           </div>
-
           <div className="grid gap-4 lg:grid-cols-3">
             {active.map((campaign) => (
               <Link
                 key={campaign.id}
-                href={`/magaza?kampanya=${campaign.slug}`}
+                href={targetHref(campaign)}
                 className="group flex items-start justify-between gap-3 rounded-2xl border border-border bg-surface p-5 transition-all hover:-translate-y-0.5 hover:border-lime-primary hover:shadow-lg hover:shadow-lime-primary/10"
               >
                 <div className="flex-1">
@@ -33,9 +45,7 @@ export async function CampaignStrip() {
                     {campaign.title}
                   </h3>
                   {campaign.description && (
-                    <p className="mt-1 text-xs text-muted">
-                      {campaign.description}
-                    </p>
+                    <p className="mt-1 text-xs text-muted">{campaign.description}</p>
                   )}
                 </div>
                 <ChevronRight
