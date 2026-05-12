@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { readServerConsent } from "@/lib/consent/server";
 import { streamChat, type ChatTurn } from "@/lib/gemini/chat";
 import { checkLimit } from "@/lib/rate-limit";
 
@@ -17,6 +18,14 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const consent = await readServerConsent();
+  if (!consent.analytics) {
+    return new Response(
+      "AI sohbeti için çerez bannerındaki Analitik veya Hepsini Kabul tercihi gerekli.",
+      { status: 403 },
+    );
+  }
+
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
     request.headers.get("x-real-ip") ??

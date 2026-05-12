@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
+import { readServerConsent } from "@/lib/consent/server";
 import { recordEvent } from "@/lib/analytics/repository";
 
 const bodySchema = z.object({
@@ -19,6 +20,12 @@ const bodySchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const consent = await readServerConsent();
+  if (!consent.analytics) {
+    // Sessizce skipped — client tracker hata almasın diye 200 dön
+    return NextResponse.json({ ok: true, skipped: true });
+  }
+
   let json: unknown;
   try {
     json = await request.json();

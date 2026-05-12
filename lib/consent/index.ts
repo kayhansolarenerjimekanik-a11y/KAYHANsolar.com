@@ -41,6 +41,11 @@ export function writeConsent(consent: Omit<ConsentState, "necessary" | "accepted
       acceptedAt: Date.now(),
     };
     localStorage.setItem(CONSENT_KEY, JSON.stringify(payload));
+    // Cookie: server-side gating (12 ay) — JSON, urlEncoded ki space/Türkçe sorun olmasın
+    const cookieValue = encodeURIComponent(
+      JSON.stringify({ analytics: payload.analytics, marketing: payload.marketing }),
+    );
+    document.cookie = `${CONSENT_KEY}=${cookieValue}; Path=/; Max-Age=${60 * 60 * 24 * 365}; SameSite=Lax`;
     window.dispatchEvent(new CustomEvent("kayhan-consent-change", { detail: payload }));
   } catch {
     // ignore quota
@@ -51,6 +56,7 @@ export function clearConsent(): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.removeItem(CONSENT_KEY);
+    document.cookie = `${CONSENT_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
     window.dispatchEvent(new CustomEvent("kayhan-consent-change", { detail: null }));
   } catch {
     // ignore
