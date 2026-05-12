@@ -49,7 +49,7 @@ export function DataTable<T>({
   emptyState,
   emptyFilteredState,
 }: Props<T>) {
-  const { state, patch, clear } = useTableState({ filters, defaultSort });
+  const { state, patch, clear } = useTableState(filters, defaultSort);
   const [rows, setRows] = useState<T[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);

@@ -51,20 +51,27 @@ export function buildSearchParams<T>(
   return sp;
 }
 
-export function useTableState<T>(config: ParseConfig<T>) {
+export function useTableState<T>(filters: FilterDef<T>[], defaultSort: string) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const state = useMemo(() => parseTableState(searchParams, config), [searchParams, config]);
+  // Why: parent passes a new { filters, defaultSort } object every render.
+  // Depend on the destructured stable refs (filters useMemo'd by caller, defaultSort
+  // is a string literal) so this memo doesn't invalidate on every render and trigger
+  // the fetch effect in DataTable infinitely.
+  const state = useMemo(
+    () => parseTableState(searchParams, { filters, defaultSort }),
+    [searchParams, filters, defaultSort],
+  );
 
   const setState = useCallback(
     (next: TableState) => {
-      const sp = buildSearchParams(next, config);
+      const sp = buildSearchParams(next, { filters, defaultSort });
       const qs = sp.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
-    [router, pathname, config],
+    [router, pathname, filters, defaultSort],
   );
 
   const patch = useCallback(
