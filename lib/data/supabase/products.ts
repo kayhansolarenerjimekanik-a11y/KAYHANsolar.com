@@ -4,7 +4,7 @@ import { productToInsert, rowToProduct } from "../mappers";
 import type { Product } from "../types";
 import { pushNotification } from "./notifications";
 
-async function fetchMedia(productIds: string[]): Promise<Map<string, any[]>> {
+async function fetchMedia(productIds: string[]): Promise<Map<string, Record<string, unknown>[]>> {
   if (productIds.length === 0) return new Map();
   const { data, error } = await adminSupabase
     .from("product_media")
@@ -12,11 +12,12 @@ async function fetchMedia(productIds: string[]): Promise<Map<string, any[]>> {
     .in("product_id", productIds)
     .order("display_order");
   if (error) throw error;
-  const map = new Map<string, any[]>();
-  for (const row of data ?? []) {
-    const list = map.get(row.product_id) ?? [];
+  const map = new Map<string, Record<string, unknown>[]>();
+  for (const row of (data ?? []) as Record<string, unknown>[]) {
+    const productId = row.product_id as string;
+    const list = map.get(productId) ?? [];
     list.push(row);
-    map.set(row.product_id, list);
+    map.set(productId, list);
   }
   return map;
 }
@@ -27,9 +28,9 @@ export async function listProducts(): Promise<Product[]> {
     .select("*")
     .order("created_at", { ascending: false });
   if (error) throw error;
-  const rows: Record<string, any>[] = data ?? [];
-  const mediaByProduct = await fetchMedia(rows.map((r) => r.id));
-  return rows.map((r) => rowToProduct(r, mediaByProduct.get(r.id) ?? []));
+  const rows: Record<string, unknown>[] = data ?? [];
+  const mediaByProduct = await fetchMedia(rows.map((r) => r.id as string));
+  return rows.map((r) => rowToProduct(r, mediaByProduct.get(r.id as string) ?? []));
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
@@ -76,7 +77,7 @@ export async function updateProduct(id: string, patch: Partial<Product>): Promis
   if (!prev) throw new Error(`Product ${id} not found`);
 
   // Map only the columns that map cleanly. Media handled separately.
-  const update: Record<string, any> = {};
+  const update: Record<string, unknown> = {};
   if (patch.slug !== undefined) update.slug = patch.slug;
   if (patch.name !== undefined) update.name = patch.name;
   if (patch.shortDescription !== undefined) update.short_description = patch.shortDescription;

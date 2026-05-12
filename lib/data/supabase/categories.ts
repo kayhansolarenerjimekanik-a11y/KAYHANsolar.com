@@ -23,7 +23,7 @@ export async function createCategory(data: Omit<Category, "id">): Promise<Catego
 }
 
 export async function updateCategory(id: string, patch: Partial<Category>): Promise<Category> {
-  const update: Record<string, any> = {};
+  const update: Record<string, unknown> = {};
   if (patch.slug !== undefined) update.slug = patch.slug;
   if (patch.name !== undefined) update.name = patch.name;
   if (patch.description !== undefined) update.description = patch.description;

@@ -30,7 +30,7 @@ export async function createCampaign(data: Omit<Campaign, "id">): Promise<Campai
 }
 
 export async function updateCampaign(id: string, patch: Partial<Campaign>): Promise<Campaign> {
-  const update: Record<string, any> = {};
+  const update: Record<string, unknown> = {};
   if (patch.slug !== undefined) update.slug = patch.slug;
   if (patch.title !== undefined) update.title = patch.title;
   if (patch.description !== undefined) update.description = patch.description;

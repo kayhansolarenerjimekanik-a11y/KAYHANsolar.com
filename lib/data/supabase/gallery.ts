@@ -4,7 +4,7 @@ import { adminSupabase } from "@/lib/supabase/admin";
 import { galleryToInsert, rowToGallery } from "../mappers";
 import type { GalleryPost } from "../types";
 
-async function fetchGalleryMedia(postIds: string[]): Promise<Map<string, any[]>> {
+async function fetchGalleryMedia(postIds: string[]): Promise<Map<string, Record<string, unknown>[]>> {
   if (postIds.length === 0) return new Map();
   const { data, error } = await adminSupabase
     .from("gallery_media")
@@ -12,11 +12,12 @@ async function fetchGalleryMedia(postIds: string[]): Promise<Map<string, any[]>>
     .in("post_id", postIds)
     .order("display_order");
   if (error) throw error;
-  const map = new Map<string, any[]>();
-  for (const row of data ?? []) {
-    const list = map.get(row.post_id) ?? [];
+  const map = new Map<string, Record<string, unknown>[]>();
+  for (const row of (data ?? []) as Record<string, unknown>[]) {
+    const postId = row.post_id as string;
+    const list = map.get(postId) ?? [];
     list.push(row);
-    map.set(row.post_id, list);
+    map.set(postId, list);
   }
   return map;
 }
@@ -27,9 +28,9 @@ export async function listGalleryPosts(): Promise<GalleryPost[]> {
     .select("*")
     .order("display_order");
   if (error) throw error;
-  const rows: Record<string, any>[] = data ?? [];
-  const mediaByPost = await fetchGalleryMedia(rows.map((r) => r.id));
-  return rows.map((r) => rowToGallery(r, mediaByPost.get(r.id) ?? []));
+  const rows: Record<string, unknown>[] = data ?? [];
+  const mediaByPost = await fetchGalleryMedia(rows.map((r) => r.id as string));
+  return rows.map((r) => rowToGallery(r, mediaByPost.get(r.id as string) ?? []));
 }
 
 export async function getGalleryPostBySlug(slug: string): Promise<GalleryPost | null> {
@@ -62,7 +63,7 @@ export async function createGalleryPost(data: Omit<GalleryPost, "id">): Promise<
 }
 
 export async function updateGalleryPost(id: string, patch: Partial<GalleryPost>): Promise<GalleryPost> {
-  const update: Record<string, any> = {};
+  const update: Record<string, unknown> = {};
   if (patch.slug !== undefined) update.slug = patch.slug;
   if (patch.title !== undefined) update.title = patch.title;
   if (patch.description !== undefined) update.description = patch.description;

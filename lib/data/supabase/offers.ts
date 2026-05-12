@@ -38,7 +38,7 @@ export async function createOffer(data: Omit<Offer, "id" | "status" | "createdAt
 }
 
 export async function updateOffer(id: string, patch: Partial<Offer>): Promise<Offer> {
-  const update: Record<string, any> = {};
+  const update: Record<string, unknown> = {};
   if (patch.status !== undefined) update.status = patch.status;
   if (patch.adminNotes !== undefined) update.admin_notes = patch.adminNotes;
   if (patch.adminResponse !== undefined) {

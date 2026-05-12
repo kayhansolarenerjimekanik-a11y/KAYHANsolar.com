@@ -11,7 +11,7 @@ export async function getSettings(): Promise<SiteSettings> {
 }
 
 export async function updateSettings(patch: Partial<SiteSettings>): Promise<SiteSettings> {
-  const updates: { key: string; value: any }[] = [];
+  const updates: { key: string; value: unknown }[] = [];
   if (patch.contactPhone !== undefined) updates.push({ key: "contact_phone", value: patch.contactPhone });
   if (patch.contactEmail !== undefined) updates.push({ key: "contact_email", value: patch.contactEmail });
   if (patch.whatsappNumber !== undefined) updates.push({ key: "whatsapp_number", value: patch.whatsappNumber });
