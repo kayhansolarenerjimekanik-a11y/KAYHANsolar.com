@@ -51,14 +51,19 @@ export function MobileBuyBar({ product, targetSelector }: MobileBuyBarProps) {
   const hidden = ctaVisible || bodyLocked;
 
   function scrollToBuySection() {
-    document
-      .querySelector(targetSelector)
-      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const section = document.querySelector<HTMLElement>(targetSelector);
+    if (!section) return;
+    section.scrollIntoView({ behavior: "smooth", block: "center" });
+    const focusTarget = section.querySelector<HTMLElement>(
+      'button, [href], input, [tabindex]:not([tabindex="-1"])',
+    );
+    focusTarget?.focus({ preventScroll: true });
   }
 
   return (
     <div
       aria-hidden={hidden}
+      inert={hidden}
       className={cn(
         "fixed bottom-0 inset-x-0 z-40 border-t border-border bg-surface/95 backdrop-blur",
         "px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]",
