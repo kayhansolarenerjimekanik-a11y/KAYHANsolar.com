@@ -61,6 +61,7 @@ export function DataTable<T>({
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     setError(null);
+    setSelectedIds(new Set());
     fetcher(state)
       .then((res) => {
         if (cancelled) return;
@@ -108,8 +109,9 @@ export function DataTable<T>({
 
   const toggleAllOnPage = () => {
     setSelectedIds((prev) => {
+      const allSelected = rows.length > 0 && rows.every((r) => prev.has(getRowId(r)));
       const next = new Set(prev);
-      if (allOnPageSelected) {
+      if (allSelected) {
         for (const r of rows) next.delete(getRowId(r));
       } else {
         for (const r of rows) next.add(getRowId(r));
