@@ -39,21 +39,21 @@ export async function GalleryShowcase() {
 
         <div className="mt-10 grid gap-4 lg:grid-cols-3 lg:grid-rows-2 lg:[grid-auto-flow:dense]">
           {featured.map((post, i) => {
-            const cover = post.media[0]?.url;
+            const cover = post.media.find((m) => m.type === "image");
             const big = i === 0;
             return (
               <Link
                 key={post.id}
                 href={`/galeri/${post.slug}`}
-                className={`group relative isolate overflow-hidden rounded-2xl border border-border bg-elevated transition-transform hover:-translate-y-0.5 ${
+                className={`group relative overflow-hidden rounded-2xl border border-border bg-elevated transition-transform hover:-translate-y-0.5 ${
                   big ? "lg:col-span-2 lg:row-span-2" : ""
                 }`}
               >
                 <div className={`relative ${big ? "aspect-[4/3] lg:aspect-auto lg:h-full" : "aspect-[4/3]"}`}>
                   {cover ? (
                     <Image
-                      src={cover}
-                      alt={post.title}
+                      src={cover.url}
+                      alt={cover.altText ?? post.title}
                       fill
                       sizes={big ? "(max-width: 1024px) 100vw, 66vw" : "(max-width: 1024px) 100vw, 33vw"}
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
