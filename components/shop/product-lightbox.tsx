@@ -110,7 +110,7 @@ export function ProductLightbox({
               src={current.url}
               poster={current.thumbnailUrl}
               controls
-              className="max-h-[80vh] w-auto"
+              className="max-h-[80vh] w-auto object-contain"
             />
           ) : null}
         </div>
