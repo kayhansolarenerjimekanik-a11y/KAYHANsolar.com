@@ -37,7 +37,7 @@ export async function bulkSetProductActiveAction(
       failed += 1;
     }
   }
-  revalidateCatalog();
+  if (succeeded > 0) revalidateCatalog();
   return { ok: failed === 0, succeeded, failed };
 }
 
@@ -57,6 +57,6 @@ export async function bulkDeleteProductsAction(
       failed += 1;
     }
   }
-  revalidateCatalog();
+  if (succeeded > 0) revalidateCatalog();
   return { ok: failed === 0, succeeded, failed };
 }
