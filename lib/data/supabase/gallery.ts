@@ -22,11 +22,14 @@ async function fetchGalleryMedia(postIds: string[]): Promise<Map<string, Record<
   return map;
 }
 
-export async function listGalleryPosts(): Promise<GalleryPost[]> {
-  const { data, error } = await adminSupabase
+export async function listGalleryPosts(opts: { onlyActive?: boolean } = {}): Promise<GalleryPost[]> {
+  let q = adminSupabase
     .from("gallery_posts")
     .select("*")
-    .order("display_order");
+    .order("display_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (opts.onlyActive) q = q.eq("is_active", true);
+  const { data, error } = await q;
   if (error) throw error;
   const rows: Record<string, unknown>[] = data ?? [];
   const mediaByPost = await fetchGalleryMedia(rows.map((r) => r.id as string));
@@ -71,6 +74,8 @@ export async function updateGalleryPost(id: string, patch: Partial<GalleryPost>)
   if (patch.installationDate !== undefined) update.installation_date = patch.installationDate;
   if (patch.systemPowerKw !== undefined) update.system_power_kw = patch.systemPowerKw;
   if (patch.isFeatured !== undefined) update.is_featured = patch.isFeatured;
+  if (patch.isActive !== undefined) update.is_active = patch.isActive;
+  if (patch.displayOrder !== undefined) update.display_order = patch.displayOrder;
   if (Object.keys(update).length > 0) {
     const { error } = await adminSupabase.from("gallery_posts").update(update).eq("id", id);
     if (error) throw error;

@@ -76,8 +76,9 @@ export const demoRepository: Repository = {
   },
 
   // ===== Categories =====
-  async listCategories() {
-    return [...getDemoStore().categories];
+  async listCategories(opts = {}) {
+    const cats = getDemoStore().categories;
+    return opts.onlyActive ? cats.filter((c) => c.isActive) : [...cats];
   },
   async createCategory(data) {
     const store = getDemoStore();
@@ -191,8 +192,10 @@ export const demoRepository: Repository = {
   },
 
   // ===== Gallery =====
-  async listGalleryPosts() {
-    return [...getDemoStore().gallery];
+  async listGalleryPosts(opts = {}) {
+    const posts = getDemoStore().gallery;
+    const list = opts.onlyActive ? posts.filter((g) => g.isActive) : [...posts];
+    return list.sort((a, b) => a.displayOrder - b.displayOrder);
   },
   async getGalleryPostBySlug(slug) {
     return getDemoStore().gallery.find((g) => g.slug === slug) ?? null;

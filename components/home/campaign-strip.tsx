@@ -8,7 +8,7 @@ export async function CampaignStrip() {
   const [campaigns, products, categories] = await Promise.all([
     repo.listCampaigns(),
     repo.listProducts(),
-    repo.listCategories(),
+    repo.listCategories({ onlyActive: true }),
   ]);
   const active = campaigns.filter((c) => c.isActive && c.displayOnHomepage);
   if (active.length === 0) return null;

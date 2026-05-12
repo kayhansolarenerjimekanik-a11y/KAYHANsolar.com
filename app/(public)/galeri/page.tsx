@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function GalleryPage() {
-  const posts = await repo.listGalleryPosts();
+  const posts = await repo.listGalleryPosts({ onlyActive: true });
 
   return (
     <Container className="py-10 lg:py-14">

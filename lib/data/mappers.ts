@@ -83,6 +83,7 @@ export function rowToCategory(row: Record<string, unknown>): Category {
     parentId: (row.parent_id as string | null) ?? null,
     iconUrl: (row.icon_url as string | null) ?? undefined,
     displayOrder: (row.display_order as number | null) ?? 0,
+    isActive: (row.is_active as boolean | null) ?? true,
   };
 }
 export function categoryToInsert(c: Omit<Category, "id">) {
@@ -93,6 +94,7 @@ export function categoryToInsert(c: Omit<Category, "id">) {
     parent_id: c.parentId ?? null,
     icon_url: c.iconUrl ?? null,
     display_order: c.displayOrder,
+    is_active: c.isActive,
   };
 }
 
@@ -221,6 +223,8 @@ export function rowToGallery(
       thumbnailUrl: (m.thumbnail_url as string | null) ?? undefined,
     })),
     isFeatured: (row.is_featured as boolean | null) ?? false,
+    isActive: (row.is_active as boolean | null) ?? true,
+    displayOrder: (row.display_order as number | null) ?? 0,
   };
 }
 export function galleryToInsert(g: Omit<GalleryPost, "id">) {
@@ -232,6 +236,8 @@ export function galleryToInsert(g: Omit<GalleryPost, "id">) {
     installation_date: g.installationDate ?? null,
     system_power_kw: g.systemPowerKw ?? null,
     is_featured: g.isFeatured,
+    is_active: g.isActive,
+    display_order: g.displayOrder,
   };
 }
 

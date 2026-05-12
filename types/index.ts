@@ -18,6 +18,7 @@ export interface Category {
   parentId?: string | null;
   iconUrl?: string;
   displayOrder: number;
+  isActive: boolean;
 }
 
 export interface ProductMedia {
@@ -86,6 +87,8 @@ export interface GalleryPost {
   systemPowerKw?: number;
   media: ProductMedia[];
   isFeatured: boolean;
+  isActive: boolean;
+  displayOrder: number;
 }
 
 export interface OfferRequest {

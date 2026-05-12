@@ -29,6 +29,7 @@ export const mockCategories: Category[] = [
     name: "Güneş Panelleri",
     description: "Monokristal, polikristal ve bifacial paneller",
     displayOrder: 1,
+    isActive: true,
   },
   {
     id: "cat-battery",
@@ -36,6 +37,7 @@ export const mockCategories: Category[] = [
     name: "Bataryalar",
     description: "Jel ve lityum bataryalar",
     displayOrder: 2,
+    isActive: true,
   },
   {
     id: "cat-inverter",
@@ -43,6 +45,7 @@ export const mockCategories: Category[] = [
     name: "İnverterler",
     description: "Tam sinüs ve modifiye sinüs",
     displayOrder: 3,
+    isActive: true,
   },
   {
     id: "cat-light",
@@ -50,6 +53,7 @@ export const mockCategories: Category[] = [
     name: "Aydınlatma",
     description: "Güneş enerjili aydınlatma çözümleri",
     displayOrder: 4,
+    isActive: true,
   },
   {
     id: "cat-package",
@@ -57,6 +61,7 @@ export const mockCategories: Category[] = [
     name: "Paket Sistemler",
     description: "Anahtar teslim paketler",
     displayOrder: 5,
+    isActive: true,
   },
 ];
 
@@ -451,6 +456,8 @@ export const mockGallery: GalleryPost[] = [
     systemPowerKw: 10,
     media: [{ id: "gm1", type: "image", url: placeholderImage("install1") }],
     isFeatured: true,
+    isActive: true,
+    displayOrder: 1,
   },
   {
     id: "g-2",
@@ -462,6 +469,8 @@ export const mockGallery: GalleryPost[] = [
     systemPowerKw: 25,
     media: [{ id: "gm2", type: "image", url: placeholderImage("install2") }],
     isFeatured: true,
+    isActive: true,
+    displayOrder: 2,
   },
   {
     id: "g-3",
@@ -473,6 +482,8 @@ export const mockGallery: GalleryPost[] = [
     systemPowerKw: 50,
     media: [{ id: "gm3", type: "image", url: placeholderImage("install3") }],
     isFeatured: false,
+    isActive: true,
+    displayOrder: 3,
   },
   {
     id: "g-4",
@@ -484,6 +495,8 @@ export const mockGallery: GalleryPost[] = [
     systemPowerKw: 15,
     media: [{ id: "gm4", type: "image", url: placeholderImage("install4") }],
     isFeatured: false,
+    isActive: true,
+    displayOrder: 4,
   },
 ];
 

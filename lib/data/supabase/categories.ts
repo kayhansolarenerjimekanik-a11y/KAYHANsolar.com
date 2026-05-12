@@ -3,13 +3,15 @@ import { adminSupabase } from "@/lib/supabase/admin";
 import { categoryToInsert, rowToCategory } from "../mappers";
 import type { Category } from "../types";
 
-export async function listCategories(): Promise<Category[]> {
-  const { data, error } = await adminSupabase
+export async function listCategories(opts: { onlyActive?: boolean } = {}): Promise<Category[]> {
+  let q = adminSupabase
     .from("categories")
     .select("*")
-    .order("display_order");
+    .order("display_order", { ascending: true });
+  if (opts.onlyActive) q = q.eq("is_active", true);
+  const { data, error } = await q;
   if (error) throw error;
-  return (data ?? []).map(rowToCategory);
+  return ((data ?? []) as Record<string, unknown>[]).map(rowToCategory);
 }
 
 export async function createCategory(data: Omit<Category, "id">): Promise<Category> {
@@ -30,6 +32,7 @@ export async function updateCategory(id: string, patch: Partial<Category>): Prom
   if (patch.parentId !== undefined) update.parent_id = patch.parentId;
   if (patch.iconUrl !== undefined) update.icon_url = patch.iconUrl;
   if (patch.displayOrder !== undefined) update.display_order = patch.displayOrder;
+  if (patch.isActive !== undefined) update.is_active = patch.isActive;
   const { data: row, error } = await adminSupabase.from("categories").update(update).eq("id", id).select().single();
   if (error) throw error;
   return rowToCategory(row);

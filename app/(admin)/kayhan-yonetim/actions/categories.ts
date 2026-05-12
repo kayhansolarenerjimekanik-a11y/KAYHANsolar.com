@@ -36,6 +36,7 @@ export async function createCategoryAction(
     slug: parsed.data.slug,
     description: parsed.data.description,
     displayOrder: parsed.data.displayOrder,
+    isActive: true,
   });
   bust();
   return {};

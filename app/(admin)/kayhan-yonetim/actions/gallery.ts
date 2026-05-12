@@ -56,6 +56,8 @@ export async function createGalleryAction(
     installationDate: parsed.data.installationDate,
     systemPowerKw: parsed.data.systemPowerKw,
     isFeatured: parsed.data.isFeatured,
+    isActive: true,
+    displayOrder: 0,
     media: parsed.data.media.map((m, i) => ({
       id: m.id ?? `gm-${Date.now()}-${i}`,
       type: m.type,

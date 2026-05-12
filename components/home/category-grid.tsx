@@ -13,7 +13,7 @@ const categoryIcons: Record<string, React.ElementType> = {
 };
 
 export async function CategoryGrid() {
-  const categories = await repo.listCategories();
+  const categories = await repo.listCategories({ onlyActive: true });
 
   return (
     <section className="border-t border-border">

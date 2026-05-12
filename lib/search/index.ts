@@ -85,8 +85,8 @@ export async function searchCatalog(query: string): Promise<SearchResults> {
 
   const [allProducts, allCategories, allGallery] = await Promise.all([
     repo.listProducts(),
-    repo.listCategories(),
-    repo.listGalleryPosts(),
+    repo.listCategories({ onlyActive: true }),
+    repo.listGalleryPosts({ onlyActive: true }),
   ]);
 
   const products = allProducts

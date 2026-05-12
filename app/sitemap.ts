@@ -27,7 +27,7 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [products, gallery] = await Promise.all([
     repo.listProducts(),
-    repo.listGalleryPosts(),
+    repo.listGalleryPosts({ onlyActive: true }),
   ]);
 
   const productRoutes: MetadataRoute.Sitemap = products

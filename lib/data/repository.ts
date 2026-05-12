@@ -22,7 +22,7 @@ export interface Repository {
   deleteProduct(id: string): Promise<void>;
 
   // Categories
-  listCategories(): Promise<Category[]>;
+  listCategories(opts?: { onlyActive?: boolean }): Promise<Category[]>;
   createCategory(data: Omit<Category, "id">): Promise<Category>;
   updateCategory(id: string, patch: Partial<Category>): Promise<Category>;
   deleteCategory(id: string): Promise<void>;
@@ -47,7 +47,7 @@ export interface Repository {
   updateOrderStatus(id: string, status: OrderStatus): Promise<Order>;
 
   // Gallery
-  listGalleryPosts(): Promise<GalleryPost[]>;
+  listGalleryPosts(opts?: { onlyActive?: boolean }): Promise<GalleryPost[]>;
   getGalleryPostBySlug(slug: string): Promise<GalleryPost | null>;
   createGalleryPost(data: Omit<GalleryPost, "id">): Promise<GalleryPost>;
   updateGalleryPost(id: string, patch: Partial<GalleryPost>): Promise<GalleryPost>;

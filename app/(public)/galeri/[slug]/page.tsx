@@ -13,7 +13,7 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
-  const posts = await repo.listGalleryPosts();
+  const posts = await repo.listGalleryPosts({ onlyActive: true });
   return posts.map((p) => ({ slug: p.slug }));
 }
 

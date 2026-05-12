@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default async function ShopPage() {
   const [products, categories, campaigns] = await Promise.all([
     repo.listProducts(),
-    repo.listCategories(),
+    repo.listCategories({ onlyActive: true }),
     repo.listCampaigns(),
   ]);
   return (
