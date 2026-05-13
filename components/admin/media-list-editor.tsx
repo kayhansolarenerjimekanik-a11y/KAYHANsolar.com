@@ -69,7 +69,7 @@ export function MediaListEditor({ name, initial }: MediaListEditorProps) {
         Medya Ekle
       </Button>
       <Label className="mt-2 block">
-        Demo modda dosya yükleme yok — URL yapıştırın (örn. picsum.photos veya kendi CDN&apos;iniz).
+        Görsel/video/PDF URL&apos;i yapıştırın. Disk&apos;ten yükleme yakında.
       </Label>
     </div>
   );
