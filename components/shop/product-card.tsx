@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { CustomLabelChip } from "@/components/shop/custom-label-chip";
 import { ProductBadgeChip } from "@/components/shop/product-badge";
 import { StockStatus } from "@/components/shop/stock-status";
 import { deriveBadges } from "@/lib/products/badges";
@@ -44,10 +45,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
         )}
 
-        {badges.length > 0 && (
+        {(badges.length > 0 || product.customLabels.length > 0) && (
           <div className="absolute left-3 top-3 flex flex-col gap-1.5">
             {badges.slice(0, 2).map((badge) => (
               <ProductBadgeChip key={badge} badge={badge} />
+            ))}
+            {product.customLabels.slice(0, 1).map((label) => (
+              <CustomLabelChip key={label.id} label={label} />
             ))}
           </div>
         )}
