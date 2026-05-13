@@ -22,3 +22,25 @@ export function computeLensRect(
     topPct: clamp01(posY) * 100 * (1 - 1 / zoom),
   };
 }
+
+/**
+ * Yalnizca https:// ile baslayan URL'leri kabul eder. javascript:, data:,
+ * relative path, http:// hepsi reddedilir. ZoomImage'in background-image
+ * src'sini guvenli tutmak icin gerekli.
+ */
+export function isHttpsUrl(s: string): boolean {
+  return /^https:\/\//.test(s);
+}
+
+/**
+ * Bir URL'i CSS `url("...")` ifadesi icinde guvenli kullanima hazirlar.
+ * Cift tirnak, ters bolu ve parantezler url() / string syntax'ini bozabilir
+ * (CSS injection); URL kodlamasi ile zararsiz hale getirilir.
+ */
+export function escapeCssUrl(s: string): string {
+  return s
+    .replaceAll("\\", "%5C")
+    .replaceAll('"', "%22")
+    .replaceAll("(", "%28")
+    .replaceAll(")", "%29");
+}
