@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { Turnstile } from "@/components/security/turnstile";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
 import { applyCampaigns } from "@/lib/campaigns";
@@ -59,6 +60,8 @@ export function CartView({
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? null;
 
   const onSubmit = handleSubmit(async (data) => {
     setSubmitting(true);
@@ -93,6 +96,7 @@ export function CartView({
             district: data.district,
             detailedAddress: data.detailedAddress,
           },
+          captchaToken,
         }),
       });
       if (!res.ok) {
@@ -364,6 +368,11 @@ export function CartView({
                     className="w-full rounded-lg border border-border bg-elevated px-3 py-2 text-sm text-foreground placeholder:text-subtle focus:border-lime-primary focus:outline-none"
                   />
                 </div>
+                <Turnstile
+                  siteKey={TURNSTILE_SITE_KEY}
+                  onToken={(t) => setCaptchaToken(t)}
+                  onExpire={() => setCaptchaToken(null)}
+                />
                 <Button
                   type="submit"
                   variant="primary"

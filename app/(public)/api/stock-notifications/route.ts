@@ -3,11 +3,13 @@ import { z } from "zod";
 
 import { checkStockSubscribeRateLimit } from "@/lib/rate-limit";
 import { subscribeToStock } from "@/lib/stock-notifications";
+import { verifyTurnstileToken } from "@/lib/turnstile";
 
 const bodySchema = z.object({
   productId: z.string().min(1),
   email: z.string().email().optional(),
   pushSubscriptionJson: z.string().optional(),
+  captchaToken: z.string().optional(),
 });
 
 export async function POST(request: Request) {
@@ -37,6 +39,10 @@ export async function POST(request: Request) {
       { error: parsed.error.issues[0]?.message ?? "Geçersiz veri" },
       { status: 400 },
     );
+  }
+  const captchaOk = await verifyTurnstileToken(parsed.data.captchaToken ?? null);
+  if (!captchaOk) {
+    return NextResponse.json({ error: "Güvenlik doğrulaması başarısız" }, { status: 400 });
   }
   if (!parsed.data.email && !parsed.data.pushSubscriptionJson) {
     return NextResponse.json(

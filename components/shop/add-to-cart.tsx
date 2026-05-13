@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { toast } from "sonner";
 
+import { Turnstile } from "@/components/security/turnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { buildQuickOrderLink } from "@/lib/whatsapp";
@@ -245,6 +246,8 @@ function NotifyWhenAvailable({
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [stockCaptchaToken, setStockCaptchaToken] = useState<string | null>(null);
+  const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? null;
 
   function submit() {
     setError(null);
@@ -258,7 +261,7 @@ function NotifyWhenAvailable({
         const res = await fetch("/api/stock-notifications", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ productId, email: trimmed }),
+          body: JSON.stringify({ productId, email: trimmed, captchaToken: stockCaptchaToken }),
         });
         const data = (await res.json()) as { ok?: boolean; error?: string };
         if (!res.ok || !data.ok) {
@@ -314,6 +317,11 @@ function NotifyWhenAvailable({
           {pending ? "Kaydediliyor..." : "Haber Ver"}
         </Button>
       </div>
+      <Turnstile
+        siteKey={TURNSTILE_SITE_KEY}
+        onToken={(t) => setStockCaptchaToken(t)}
+        onExpire={() => setStockCaptchaToken(null)}
+      />
       {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );

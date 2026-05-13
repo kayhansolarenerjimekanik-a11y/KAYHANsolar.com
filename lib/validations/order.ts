@@ -24,6 +24,7 @@ export const createOrderSchema = z.object({
     district: z.string().min(1),
     detailedAddress: z.string().min(10),
   }),
+  captchaToken: z.string().optional(),
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>;
