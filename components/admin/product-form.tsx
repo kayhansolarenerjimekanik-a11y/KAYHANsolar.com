@@ -13,23 +13,26 @@ import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-import type { Category, Product } from "@/types";
+import type { Category, Product, ProductLabel } from "@/types";
 
+import { cn } from "@/lib/utils";
 import { productFieldLabel } from "@/lib/admin/field-labels";
 import { productBadgeLabels } from "@/lib/mock/data";
 import { deriveBadges } from "@/lib/products/badges";
+import { labelColorClasses } from "@/lib/products/label-colors";
 
 import type { ProductActionState } from "@/app/(admin)/kayhan-yonetim/actions/products";
 
 interface ProductFormProps {
   initial?: Product;
   categories: Category[];
+  allLabels: ProductLabel[];
   action: (state: ProductActionState, fd: FormData) => Promise<ProductActionState>;
   submitLabel: string;
 }
 
 
-export function ProductForm({ initial, categories, action, submitLabel }: ProductFormProps) {
+export function ProductForm({ initial, categories, allLabels, action, submitLabel }: ProductFormProps) {
   const [state, formAction, pending] = useActionState<ProductActionState, FormData>(
     action,
     {},
@@ -53,6 +56,17 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
   const [lowStockThreshold, setLowStockThreshold] = useState<string>(
     String(initial?.lowStockThreshold ?? 3),
   );
+  const [selectedLabelIds, setSelectedLabelIds] = useState<Set<string>>(
+    new Set((initial?.customLabels ?? []).map((l) => l.id)),
+  );
+  const toggleLabel = (id: string) => {
+    setSelectedLabelIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   const errFor = (field: string) => state.fieldErrors?.[field];
 
@@ -287,6 +301,49 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
             />
           </div>
         </div>
+      </section>
+
+      <section className="rounded-2xl border border-border bg-surface p-5">
+        <h2 className="text-sm font-semibold tracking-tight">Özel Etiketler</h2>
+        {allLabels.length === 0 ? (
+          <p className="mt-2 text-xs text-muted">
+            Henüz etiket yok.{" "}
+            <Link
+              href="/kayhan-yonetim/etiketler/new"
+              className="text-lime-dark underline hover:text-lime-primary"
+            >
+              Hemen ekle
+            </Link>
+            .
+          </p>
+        ) : (
+          <div className="mt-4 flex flex-wrap gap-2">
+            {allLabels.map((label) => {
+              const isSelected = selectedLabelIds.has(label.id);
+              return (
+                <button
+                  key={label.id}
+                  type="button"
+                  onClick={() => toggleLabel(label.id)}
+                  aria-pressed={isSelected}
+                  className={cn(
+                    "rounded-md px-3 py-1 text-xs font-semibold uppercase tracking-wide transition-opacity",
+                    isSelected
+                      ? labelColorClasses(label.color)
+                      : "border border-border bg-surface text-muted opacity-60 hover:opacity-100",
+                  )}
+                >
+                  {label.name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+        <input
+          type="hidden"
+          name="customLabelIds"
+          value={JSON.stringify([...selectedLabelIds])}
+        />
       </section>
 
       <div className="rounded-xl border border-border bg-elevated p-3 text-xs">

@@ -11,9 +11,10 @@ interface EditPageProps {
 
 export default async function EditProductPage({ params }: EditPageProps) {
   const { id } = await params;
-  const [product, categories] = await Promise.all([
+  const [product, categories, allLabels] = await Promise.all([
     repo.getProductById(id),
     repo.listCategories(),
+    repo.listProductLabels(),
   ]);
   if (!product) notFound();
 
@@ -38,6 +39,7 @@ export default async function EditProductPage({ params }: EditPageProps) {
       <ProductForm
         initial={product}
         categories={categories}
+        allLabels={allLabels}
         action={boundUpdate}
         submitLabel="Değişiklikleri Kaydet"
       />

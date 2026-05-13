@@ -29,6 +29,21 @@ export interface ProductMedia {
   altText?: string;
 }
 
+export type ProductLabelColor =
+  | "lime"
+  | "red"
+  | "yellow"
+  | "blue"
+  | "purple"
+  | "gray";
+
+export interface ProductLabel {
+  id: string;
+  name: string;
+  color: ProductLabelColor;
+  createdAt: string;
+}
+
 export interface Product {
   id: string;
   slug: string;
@@ -50,6 +65,7 @@ export interface Product {
   isNewArrival: boolean;
   hasFreeShipping: boolean;
   warrantyYears: number | null;
+  customLabels: ProductLabel[];
   media: ProductMedia[];
   metaTitle?: string;
   metaDescription?: string;

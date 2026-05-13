@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { AddToCart } from "@/components/shop/add-to-cart";
+import { CustomLabelChip } from "@/components/shop/custom-label-chip";
 import { MobileBuyBar } from "@/components/shop/mobile-buy-bar";
 import { ProductCard } from "@/components/shop/product-card";
 import { ProductBadgeChip } from "@/components/shop/product-badge";
@@ -134,10 +135,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </h1>
             <p className="text-sm text-muted">{product.shortDescription}</p>
 
-            {badges.length > 0 && (
+            {(badges.length > 0 || product.customLabels.length > 0) && (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {badges.map((badge) => (
                   <ProductBadgeChip key={badge} badge={badge} />
+                ))}
+                {product.customLabels.map((label) => (
+                  <CustomLabelChip key={label.id} label={label} />
                 ))}
               </div>
             )}

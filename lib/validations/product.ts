@@ -37,6 +37,7 @@ export const productInputSchema = z.object({
     z.union([z.literal(null), z.number().int().min(0).max(20)]),
   ).default(null),
   media: z.array(mediaSchema).min(1, "En az 1 görsel ekleyin"),
+  customLabelIds: z.array(z.string()).default([]),
 });
 
 export type ProductInput = z.infer<typeof productInputSchema>;
