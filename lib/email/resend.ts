@@ -26,8 +26,8 @@ interface SendArgs {
 async function send({ to, subject, html }: SendArgs): Promise<{ ok: boolean; error?: string }> {
   const client = getClient();
   if (!client) {
-    console.warn("[email] Resend disabled; would send:", { to, subject });
-    return { ok: true };
+    console.warn("[email] Resend disabled (RESEND_API_KEY missing); would send:", { to, subject });
+    return { ok: false, error: "E-posta servisi yapılandırılmamış" };
   }
   try {
     const { error } = await client.emails.send({ from: FROM, to, subject, html });

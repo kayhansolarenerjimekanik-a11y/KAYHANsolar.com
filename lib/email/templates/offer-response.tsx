@@ -28,6 +28,9 @@ export function renderOfferResponseEmail(
       <p style="margin:4px 0 0;font-size:12px;color:#64748b;">Bu tahmin saha keşfi sonrasında kesinleşecektir. ±%10 değişebilir.</p>`;
 
   const waLink = waUrl(offer.fullName);
+  const waButton = waLink
+    ? `<a href="${waLink}" style="display:inline-block;padding:12px 20px;background:#25d366;color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;">WhatsApp'tan İletişime Geç</a>`
+    : "";
 
   return `<!doctype html>
 <html lang="tr">
@@ -47,7 +50,7 @@ export function renderOfferResponseEmail(
       ${calcRows}
 
       <div style="margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;">
-        <a href="${waLink}" style="display:inline-block;padding:12px 20px;background:#25d366;color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;">WhatsApp'tan İletişime Geç</a>
+        ${waButton}
         <a href="${siteUrl()}/magaza" style="display:inline-block;padding:12px 20px;background:#c7ff00;color:#000;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;">Mağazamızı İncele</a>
       </div>
 
@@ -70,8 +73,11 @@ function siteUrl(): string {
   return process.env.NEXT_PUBLIC_SITE_URL ?? "https://kayhansolar.com";
 }
 
-function waUrl(fullName: string): string {
-  const phone = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "905555555555").replace(/\D/g, "");
+function waUrl(fullName: string): string | null {
+  const raw = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER;
+  if (!raw) return null;
+  const phone = raw.replace(/\D/g, "");
+  if (!phone) return null;
   const text = encodeURIComponent(
     `Merhaba, ${fullName}. Teklifimle ilgili görüşmek istiyorum.`,
   );
