@@ -11,6 +11,7 @@ export interface CartCalculationInput {
     productId: string;
     quantity: number;
     price: number;
+    hasFreeShipping: boolean;
   }>;
   productCategoryById: Record<string, string>; // productId -> categoryId
   baseShippingCost: number;

@@ -68,7 +68,6 @@ async function main() {
         compare_at_price: p.compareAtPrice ?? null,
         stock_quantity: p.stockQuantity,
         low_stock_threshold: p.lowStockThreshold,
-        badges: p.badges,
         is_active: p.isActive,
         is_featured: p.isFeatured,
         is_new_arrival: p.isNewArrival,

@@ -45,10 +45,11 @@ export interface Product {
   compareAtPrice?: number;
   stockQuantity: number;
   lowStockThreshold: number;
-  badges: ProductBadge[];
   isActive: boolean;
   isFeatured: boolean;
   isNewArrival: boolean;
+  hasFreeShipping: boolean;
+  warrantyYears: number | null;
   media: ProductMedia[];
   metaTitle?: string;
   metaDescription?: string;

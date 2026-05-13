@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-const badgeEnum = z.enum([
-  "kargo_bedava",
-  "yeni",
-  "tercih_edilen",
-  "5_yil_garanti",
-  "10_yil_garanti",
-  "stokta_son",
-]);
-
 const mediaSchema = z.object({
   id: z.string().optional(),
   type: z.enum(["image", "video", "pdf"]),
@@ -37,10 +28,14 @@ export const productInputSchema = z.object({
   compareAtPrice: z.coerce.number().positive().optional(),
   stockQuantity: z.coerce.number().int().nonnegative(),
   lowStockThreshold: z.coerce.number().int().min(1).default(3),
-  badges: z.array(badgeEnum).default([]),
   isActive: z.coerce.boolean().default(true),
   isFeatured: z.coerce.boolean().default(false),
   isNewArrival: z.coerce.boolean().default(false),
+  hasFreeShipping: z.coerce.boolean().default(false),
+  warrantyYears: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : Number(v)),
+    z.union([z.literal(null), z.number().int().min(0).max(20)]),
+  ).default(null),
   media: z.array(mediaSchema).min(1, "En az 1 görsel ekleyin"),
 });
 

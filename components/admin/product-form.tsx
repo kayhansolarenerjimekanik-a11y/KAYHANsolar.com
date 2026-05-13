@@ -13,7 +13,10 @@ import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 
-import type { Category, Product, ProductBadge } from "@/types";
+import type { Category, Product } from "@/types";
+
+import { deriveBadges } from "@/lib/products/badges";
+import { productBadgeLabels } from "@/lib/mock/data";
 
 import type { ProductActionState } from "@/app/(admin)/kayhan-yonetim/actions/products";
 
@@ -24,14 +27,6 @@ interface ProductFormProps {
   submitLabel: string;
 }
 
-const ALL_BADGES: { value: ProductBadge; label: string }[] = [
-  { value: "kargo_bedava", label: "Kargo Bedava" },
-  { value: "yeni", label: "Yeni" },
-  { value: "tercih_edilen", label: "Tercih Edilen" },
-  { value: "5_yil_garanti", label: "5 Yıl Garanti" },
-  { value: "10_yil_garanti", label: "10 Yıl Garanti" },
-  { value: "stokta_son", label: "Stokta Son" },
-];
 
 export function ProductForm({ initial, categories, action, submitLabel }: ProductFormProps) {
   const [state, formAction, pending] = useActionState<ProductActionState, FormData>(
@@ -39,13 +34,24 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
     {},
   );
 
-  const [selectedBadges, setSelectedBadges] = useState<ProductBadge[]>(
-    initial?.badges ?? [],
+  const [hasFreeShipping, setHasFreeShipping] = useState<boolean>(
+    initial?.hasFreeShipping ?? false,
   );
-  const toggleBadge = (b: ProductBadge) =>
-    setSelectedBadges((cur) =>
-      cur.includes(b) ? cur.filter((x) => x !== b) : [...cur, b],
-    );
+  const [warrantyYears, setWarrantyYears] = useState<string>(
+    initial?.warrantyYears != null ? String(initial.warrantyYears) : "",
+  );
+  const [isFeatured, setIsFeatured] = useState<boolean>(
+    initial?.isFeatured ?? false,
+  );
+  const [isNewArrival, setIsNewArrival] = useState<boolean>(
+    initial?.isNewArrival ?? false,
+  );
+  const [stockQuantity, setStockQuantity] = useState<string>(
+    String(initial?.stockQuantity ?? 0),
+  );
+  const [lowStockThreshold, setLowStockThreshold] = useState<string>(
+    String(initial?.lowStockThreshold ?? 3),
+  );
 
   const errFor = (field: string) => state.fieldErrors?.[field];
 
@@ -191,8 +197,9 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
               id="stockQuantity"
               name="stockQuantity"
               type="number"
-              step="1"
-              defaultValue={initial?.stockQuantity ?? 0}
+              min={0}
+              value={stockQuantity}
+              onChange={(e) => setStockQuantity(e.target.value)}
               required
             />
           </div>
@@ -202,8 +209,9 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
               id="lowStockThreshold"
               name="lowStockThreshold"
               type="number"
-              step="1"
-              defaultValue={initial?.lowStockThreshold ?? 3}
+              min={0}
+              value={lowStockThreshold}
+              onChange={(e) => setLowStockThreshold(e.target.value)}
             />
           </div>
         </div>
@@ -229,25 +237,30 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
         <h2 className="text-sm font-semibold tracking-tight">Etiketler & Görünürlük</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <fieldset className="rounded-xl border border-border bg-elevated p-3">
-            <legend className="px-1 text-xs font-medium text-muted">Etiketler</legend>
-            <div className="mt-2 flex flex-wrap gap-3">
-              {ALL_BADGES.map((b) => (
-                <label key={b.value} className="inline-flex items-center gap-2 text-sm">
-                  <input
-                    type="checkbox"
-                    checked={selectedBadges.includes(b.value)}
-                    onChange={() => toggleBadge(b.value)}
-                    className="h-4 w-4 accent-lime-primary"
-                  />
-                  {b.label}
-                </label>
-              ))}
+            <legend className="px-1 text-xs font-medium text-muted">Etiket Kaynakları</legend>
+            <div className="mt-2 space-y-3">
+              <Switch
+                id="hasFreeShipping"
+                name="hasFreeShipping"
+                label="Kargo bedava"
+                checked={hasFreeShipping}
+                onChange={(e) => setHasFreeShipping(e.target.checked)}
+              />
+              <div className="space-y-1.5">
+                <Label htmlFor="warrantyYears">Garanti (yıl)</Label>
+                <Input
+                  id="warrantyYears"
+                  name="warrantyYears"
+                  type="number"
+                  min={0}
+                  max={20}
+                  value={warrantyYears}
+                  onChange={(e) => setWarrantyYears(e.target.value)}
+                  placeholder="Örn. 5 veya 10"
+                />
+                <p className="text-[10px] text-subtle">5 veya 10 yazılırsa garanti etiketi görünür. Boş bırakırsanız etiket yok.</p>
+              </div>
             </div>
-            <input
-              type="hidden"
-              name="badges"
-              value={JSON.stringify(selectedBadges)}
-            />
           </fieldset>
 
           <div className="space-y-3 rounded-xl border border-border bg-elevated p-3">
@@ -261,17 +274,37 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
               id="isFeatured"
               name="isFeatured"
               label="Anasayfada öne çıkar"
-              defaultChecked={initial?.isFeatured ?? false}
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
             />
             <Switch
               id="isNewArrival"
               name="isNewArrival"
               label="Yeni gelen"
-              defaultChecked={initial?.isNewArrival ?? false}
+              checked={isNewArrival}
+              onChange={(e) => setIsNewArrival(e.target.checked)}
             />
           </div>
         </div>
       </section>
+
+      <div className="rounded-xl border border-border bg-elevated p-3 text-xs">
+        <span className="font-medium text-muted">Önizleme — kaydedince görünecek etiketler:</span>{" "}
+        {(() => {
+          const previewBadges = deriveBadges({
+            hasFreeShipping,
+            isFeatured,
+            isNewArrival,
+            stockQuantity: Number(stockQuantity) || 0,
+            lowStockThreshold: Number(lowStockThreshold) || 3,
+            warrantyYears: warrantyYears === "" ? null : Number(warrantyYears),
+          });
+          if (previewBadges.length === 0) {
+            return <span className="italic text-subtle">(etiket yok)</span>;
+          }
+          return previewBadges.map((b) => productBadgeLabels[b]).join(" · ");
+        })()}
+      </div>
 
       {state.error && (
         <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
