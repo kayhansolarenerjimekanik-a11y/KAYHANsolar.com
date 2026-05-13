@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 
 import { ProductLightbox } from "@/components/shop/product-lightbox";
+import { ZoomImage } from "@/components/shop/zoom-image";
 import { cn } from "@/lib/utils";
 import type { ProductMedia } from "@/types";
 
@@ -82,13 +83,9 @@ export function ProductGallery({ media, productName }: ProductGalleryProps) {
         )}
       >
         {activeMedia.type === "image" ? (
-          <Image
+          <ZoomImage
             src={activeMedia.url}
             alt={activeMedia.altText ?? productName}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            priority
-            className="object-cover"
           />
         ) : activeMedia.type === "video" ? (
           <video
