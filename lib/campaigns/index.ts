@@ -25,7 +25,9 @@ export function applyCampaigns(
     (s, a) => s + a.discountAmount,
     0,
   );
-  const freeShipping = applied.some((a) => a.freeShipping);
+  const hasItemWithFreeShipping = input.items.some((i) => i.hasFreeShipping);
+  const freeShipping =
+    hasItemWithFreeShipping || applied.some((a) => a.freeShipping);
 
   const discountedSubtotal = Math.max(0, subtotal - totalDiscount);
   const shippingCost = freeShipping

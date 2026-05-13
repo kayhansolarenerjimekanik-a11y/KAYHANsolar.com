@@ -7,6 +7,7 @@ export interface CartItem {
   imageUrl?: string;
   quantity: number;
   stockQuantity: number;
+  hasFreeShipping: boolean;
 }
 
 export interface ShippingAddress {

@@ -78,6 +78,7 @@ export function AddToCart({ product, whatsappNumber }: AddToCartProps) {
       price: product.currentPrice,
       imageUrl: product.media[0]?.url,
       stockQuantity: product.stockQuantity,
+      hasFreeShipping: product.hasFreeShipping,
       quantity,
     });
     toast.success("Sepete eklendi", {

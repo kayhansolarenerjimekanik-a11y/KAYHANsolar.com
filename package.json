@@ -7,13 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest",
     "check:env": "node scripts/check-env.mjs",
     "db:migrate": "tsx --env-file=.env.local scripts/apply-migrations.ts",
     "seed:ai": "tsx --env-file=.env.local scripts/seed-ai-knowledge.ts",
     "create:admin": "tsx --env-file=.env.local scripts/create-admin.ts",
     "seed:supabase": "tsx --env-file=.env.local scripts/seed-supabase.ts",
-    "refresh:campaigns": "tsx --env-file=.env.local scripts/refresh-campaign-dates.ts"
+    "refresh:campaigns": "tsx --env-file=.env.local scripts/refresh-campaign-dates.ts",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -47,12 +48,12 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@types/web-push": "^3.6.4",
-    "@vitest/ui": "^4.1.6",
+    "@vitest/ui": "^2.1.9",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5",
-    "vitest": "^4.1.6"
+    "vitest": "^2.1.9"
   }
 }

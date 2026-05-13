@@ -12,6 +12,7 @@ import { ShareActions } from "@/components/shop/share-actions";
 import { StockStatus } from "@/components/shop/stock-status";
 import { Container } from "@/components/ui/container";
 import { ProductJsonLd } from "@/components/seo/product-jsonld";
+import { deriveBadges } from "@/lib/products/badges";
 import { repo } from "@/lib/data";
 import { formatPrice } from "@/lib/utils";
 import { recordEvent } from "@/lib/analytics/repository";
@@ -74,6 +75,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           100,
       )
     : 0;
+  const badges = deriveBadges(product);
 
   const related = allProducts
     .filter(
@@ -132,9 +134,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </h1>
             <p className="text-sm text-muted">{product.shortDescription}</p>
 
-            {product.badges.length > 0 && (
+            {badges.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">
-                {product.badges.map((badge) => (
+                {badges.map((badge) => (
                   <ProductBadgeChip key={badge} badge={badge} />
                 ))}
               </div>

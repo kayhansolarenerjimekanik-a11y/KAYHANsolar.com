@@ -79,7 +79,13 @@ export const useCart = create<CartState>()(
     {
       name: "kayhan-cart",
       onRehydrateStorage: () => (state) => {
-        state?.setHydrated();
+        if (state) {
+          state.items = state.items.map((i) => ({
+            ...i,
+            hasFreeShipping: i.hasFreeShipping ?? false,
+          }));
+          state.setHydrated();
+        }
       },
     },
   ),

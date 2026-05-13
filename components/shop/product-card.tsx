@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ProductBadgeChip } from "@/components/shop/product-badge";
 import { StockStatus } from "@/components/shop/stock-status";
+import { deriveBadges } from "@/lib/products/badges";
 import { cn, formatPrice } from "@/lib/utils";
 import type { Product } from "@/types";
 
@@ -13,6 +14,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const primaryImage = product.media[0]?.url;
+  const badges = deriveBadges(product);
   const hasDiscount =
     product.compareAtPrice && product.compareAtPrice > product.currentPrice;
   const discountPercent = hasDiscount
@@ -42,9 +44,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
           />
         )}
 
-        {product.badges.length > 0 && (
+        {badges.length > 0 && (
           <div className="absolute left-3 top-3 flex flex-col gap-1.5">
-            {product.badges.slice(0, 2).map((badge) => (
+            {badges.slice(0, 2).map((badge) => (
               <ProductBadgeChip key={badge} badge={badge} />
             ))}
           </div>

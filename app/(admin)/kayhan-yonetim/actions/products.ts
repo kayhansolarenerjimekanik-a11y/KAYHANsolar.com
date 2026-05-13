@@ -25,13 +25,6 @@ function parseFormData(formData: FormData): ProductInput | { error: string; fiel
   const raw: Record<string, unknown> = Object.fromEntries(formData.entries());
 
   // Coerce arrays from JSON-encoded fields
-  if (typeof raw.badges === "string") {
-    try {
-      raw.badges = JSON.parse(raw.badges as string);
-    } catch {
-      raw.badges = [];
-    }
-  }
   if (typeof raw.media === "string") {
     try {
       raw.media = JSON.parse(raw.media as string);
@@ -51,6 +44,8 @@ function parseFormData(formData: FormData): ProductInput | { error: string; fiel
   raw.isFeatured = formData.get("isFeatured") === "on" || raw.isFeatured === "true";
   raw.isNewArrival =
     formData.get("isNewArrival") === "on" || raw.isNewArrival === "true";
+  raw.hasFreeShipping =
+    formData.get("hasFreeShipping") === "on" || raw.hasFreeShipping === "true";
 
   const parsed = productInputSchema.safeParse(raw);
   if (!parsed.success) {

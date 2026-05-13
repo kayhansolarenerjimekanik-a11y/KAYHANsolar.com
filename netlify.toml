@@ -1,0 +1,27 @@
+# netlify.toml — Netlify build config for kayhan-solar
+# Plugin @netlify/plugin-nextjs auto-installs and handles Next.js routing,
+# server components, server actions, and image optimization.
+
+[build]
+  command = "pnpm build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "24"
+  PNPM_VERSION = "10"
+  NEXT_TELEMETRY_DISABLED = "1"
+
+# @netlify/plugin-nextjs is auto-detected when Next.js is in package.json
+# but explicit declaration prevents version drift surprises.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security headers — defense in depth.
+# CSP must allow Turnstile (challenges.cloudflare.com) and Supabase storage.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
