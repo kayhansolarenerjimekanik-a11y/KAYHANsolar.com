@@ -12,7 +12,7 @@ import type {
   SiteSettings,
   StockSubscription,
 } from "./types";
-import type { CampaignRuleType, ProductMedia } from "@/types";
+import type { CampaignRuleType, ProductLabel, ProductLabelColor, ProductMedia } from "@/types";
 
 // ===== Product =====
 export function rowToProduct(
@@ -40,6 +40,7 @@ export function rowToProduct(
     isNewArrival: (row.is_new_arrival as boolean | null) ?? false,
     hasFreeShipping: (row.has_free_shipping as boolean | null) ?? false,
     warrantyYears: (row.warranty_years as number | null) ?? null,
+    customLabels: [],
     metaTitle: (row.meta_title as string | null) ?? undefined,
     metaDescription: (row.meta_description as string | null) ?? undefined,
     media: media.map((m): ProductMedia => ({
@@ -53,7 +54,7 @@ export function rowToProduct(
   };
 }
 
-export function productToInsert(p: Omit<Product, "id" | "createdAt">) {
+export function productToInsert(p: Omit<Product, "id" | "createdAt" | "customLabels">) {
   return {
     slug: p.slug,
     name: p.name,
@@ -267,6 +268,16 @@ export function rowToNotification(row: Record<string, unknown>): AdminNotificati
     relatedId: (row.related_id as string | null) ?? undefined,
     relatedType: (row.related_type as AdminNotification["relatedType"] | null) ?? undefined,
     isRead: (row.is_read as boolean | null) ?? false,
+    createdAt: row.created_at as string,
+  };
+}
+
+// ===== ProductLabel =====
+export function rowToProductLabel(row: Record<string, unknown>): ProductLabel {
+  return {
+    id: row.id as string,
+    name: row.name as string,
+    color: row.color as ProductLabelColor,
     createdAt: row.created_at as string,
   };
 }

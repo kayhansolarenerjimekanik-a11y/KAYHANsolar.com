@@ -3,6 +3,7 @@ import type {
   Category,
   GalleryPost,
   Product,
+  ProductLabel,
   SiteSettings,
 } from "@/types";
 
@@ -68,6 +69,27 @@ export const mockCategories: Category[] = [
 const placeholderImage = (seed: string) =>
   `https://picsum.photos/seed/${seed}/800/800`;
 
+export const mockProductLabels: ProductLabel[] = [
+  {
+    id: "label-yilbasi",
+    name: "Yılbaşı Kampanyası",
+    color: "red",
+    createdAt: "2026-01-01T00:00:00.000Z",
+  },
+  {
+    id: "label-yeni-sezon",
+    name: "Yeni Sezon",
+    color: "lime",
+    createdAt: "2026-03-01T00:00:00.000Z",
+  },
+  {
+    id: "label-sinirli-stok",
+    name: "Sınırlı Stok",
+    color: "yellow",
+    createdAt: "2026-02-01T00:00:00.000Z",
+  },
+];
+
 export const mockProducts: Product[] = [
   {
     id: "p-1",
@@ -97,6 +119,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: true,
     warrantyYears: 10,
+    customLabels: [mockProductLabels[0]],
     media: [
       { id: "m1", type: "image", url: placeholderImage("panel1a") },
       { id: "m2", type: "image", url: placeholderImage("panel1b") },
@@ -129,6 +152,7 @@ export const mockProducts: Product[] = [
     isNewArrival: true,
     hasFreeShipping: true,
     warrantyYears: 5,
+    customLabels: [mockProductLabels[1], mockProductLabels[2]],
     media: [
       { id: "m4", type: "image", url: placeholderImage("battery1a") },
       { id: "m5", type: "image", url: placeholderImage("battery1b") },
@@ -161,6 +185,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: false,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m6", type: "image", url: placeholderImage("inverter1") }],
     createdAt: "2025-01-20T10:00:00Z",
   },
@@ -189,6 +214,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: true,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m7", type: "image", url: placeholderImage("package1") }],
     createdAt: "2025-03-01T10:00:00Z",
   },
@@ -216,6 +242,7 @@ export const mockProducts: Product[] = [
     isNewArrival: true,
     hasFreeShipping: false,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m8", type: "image", url: placeholderImage("light1") }],
     createdAt: "2025-04-01T10:00:00Z",
   },
@@ -243,6 +270,7 @@ export const mockProducts: Product[] = [
     isNewArrival: true,
     hasFreeShipping: false,
     warrantyYears: 10,
+    customLabels: [],
     media: [{ id: "m9", type: "image", url: placeholderImage("panel2") }],
     createdAt: "2025-04-12T10:00:00Z",
   },
@@ -270,6 +298,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: true,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m10", type: "image", url: placeholderImage("panel3") }],
     createdAt: "2025-01-05T10:00:00Z",
   },
@@ -297,6 +326,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: false,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m11", type: "image", url: placeholderImage("battery2") }],
     createdAt: "2025-01-08T10:00:00Z",
   },
@@ -324,6 +354,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: false,
     warrantyYears: 5,
+    customLabels: [],
     media: [{ id: "m12", type: "image", url: placeholderImage("inverter2") }],
     createdAt: "2025-02-15T10:00:00Z",
   },
@@ -350,6 +381,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: true,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m13", type: "image", url: placeholderImage("package2") }],
     createdAt: "2025-03-10T10:00:00Z",
   },
@@ -378,6 +410,7 @@ export const mockProducts: Product[] = [
     isNewArrival: true,
     hasFreeShipping: true,
     warrantyYears: null,
+    customLabels: [],
     media: [{ id: "m14", type: "image", url: placeholderImage("light2") }],
     createdAt: "2025-04-15T10:00:00Z",
   },
@@ -405,6 +438,7 @@ export const mockProducts: Product[] = [
     isNewArrival: false,
     hasFreeShipping: false,
     warrantyYears: 5,
+    customLabels: [],
     media: [{ id: "m15", type: "image", url: placeholderImage("mppt1") }],
     createdAt: "2025-02-01T10:00:00Z",
   },

@@ -10,6 +10,7 @@ import type {
   Order,
   Product,
 } from "./types";
+import type { ProductLabel, ProductLabelColor } from "@/types";
 
 function genId(prefix: string): string {
   return `${prefix}-${Date.now().toString(36)}-${Math.random()
@@ -23,32 +24,49 @@ function nextOrderNumber(orders: Order[]): string {
   return `KH-${year}-${String(seq).padStart(6, "0")}`;
 }
 
+function attachCustomLabels(p: Product): Product {
+  const store = getDemoStore();
+  const labelIds = store.productLabelAssignments
+    .filter((a) => a.productId === p.id)
+    .map((a) => a.labelId);
+  return {
+    ...p,
+    customLabels: store.productLabels.filter((l) => labelIds.includes(l.id)),
+  };
+}
+
 export const demoRepository: Repository = {
   // ===== Products =====
   async listProducts() {
-    return [...getDemoStore().products];
+    return getDemoStore().products.map(attachCustomLabels);
   },
   async getProductById(id) {
-    return getDemoStore().products.find((p) => p.id === id) ?? null;
+    const p = getDemoStore().products.find((p) => p.id === id) ?? null;
+    return p ? attachCustomLabels(p) : null;
   },
   async getProductBySlug(slug) {
-    return getDemoStore().products.find((p) => p.slug === slug) ?? null;
+    const p = getDemoStore().products.find((p) => p.slug === slug) ?? null;
+    return p ? attachCustomLabels(p) : null;
   },
   async createProduct(data) {
     const store = getDemoStore();
+    const { customLabelIds = [], ...rest } = data;
     const product: Product = {
-      ...data,
+      ...rest,
       id: genId("p"),
+      customLabels: [],
       createdAt: new Date().toISOString(),
     };
     store.products.unshift(product);
-    return product;
+    await demoRepository.setProductLabels(product.id, customLabelIds);
+    return attachCustomLabels(product);
   },
-  async updateProduct(id, patch) {
+  async updateProduct(id, data) {
     const store = getDemoStore();
     const idx = store.products.findIndex((p) => p.id === id);
     if (idx === -1) throw new Error(`Product ${id} not found`);
     const prev = store.products[idx];
+    const { customLabelIds, ...patch } = data;
     const next = { ...prev, ...patch };
 
     // Low-stock notification trigger
@@ -68,7 +86,10 @@ export const demoRepository: Repository = {
     }
 
     store.products[idx] = next;
-    return next;
+    if (customLabelIds !== undefined) {
+      await demoRepository.setProductLabels(id, customLabelIds);
+    }
+    return attachCustomLabels(next);
   },
   async deleteProduct(id) {
     const store = getDemoStore();
@@ -288,6 +309,56 @@ export const demoRepository: Repository = {
     const store = getDemoStore();
     const sub = store.stockSubscriptions.find((s) => s.id === id);
     if (sub) sub.isNotified = true;
+  },
+
+  // ===== Product Labels =====
+  async listProductLabels(): Promise<ProductLabel[]> {
+    return [...getDemoStore().productLabels];
+  },
+  async getProductLabelById(id: string): Promise<ProductLabel | null> {
+    return getDemoStore().productLabels.find((l) => l.id === id) ?? null;
+  },
+  async createProductLabel(data: { name: string; color: ProductLabelColor }): Promise<ProductLabel> {
+    const store = getDemoStore();
+    const label: ProductLabel = {
+      id: `label-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      name: data.name,
+      color: data.color,
+      createdAt: new Date().toISOString(),
+    };
+    store.productLabels.push(label);
+    return label;
+  },
+  async updateProductLabel(
+    id: string,
+    data: { name?: string; color?: ProductLabelColor },
+  ): Promise<ProductLabel> {
+    const store = getDemoStore();
+    const idx = store.productLabels.findIndex((l) => l.id === id);
+    if (idx === -1) throw new Error("Etiket bulunamadı");
+    const updated: ProductLabel = {
+      ...store.productLabels[idx],
+      ...(data.name !== undefined ? { name: data.name } : {}),
+      ...(data.color !== undefined ? { color: data.color } : {}),
+    };
+    store.productLabels[idx] = updated;
+    return updated;
+  },
+  async deleteProductLabel(id: string): Promise<void> {
+    const store = getDemoStore();
+    store.productLabels = store.productLabels.filter((l) => l.id !== id);
+    store.productLabelAssignments = store.productLabelAssignments.filter(
+      (a) => a.labelId !== id,
+    );
+  },
+  async setProductLabels(productId: string, labelIds: string[]): Promise<void> {
+    const store = getDemoStore();
+    store.productLabelAssignments = store.productLabelAssignments.filter(
+      (a) => a.productId !== productId,
+    );
+    for (const labelId of labelIds) {
+      store.productLabelAssignments.push({ productId, labelId });
+    }
   },
 };
 

@@ -3,6 +3,7 @@ import "server-only";
 import * as Campaigns from "./supabase/campaigns";
 import * as Categories from "./supabase/categories";
 import * as Gallery from "./supabase/gallery";
+import * as Labels from "./supabase/labels";
 import * as Notifications from "./supabase/notifications";
 import * as Offers from "./supabase/offers";
 import * as Orders from "./supabase/orders";
@@ -52,4 +53,10 @@ export const supabaseRepository: Repository = {
   createStockSubscription: StockSubs.createStockSubscription,
   deleteStockSubscription: StockSubs.deleteStockSubscription,
   markStockSubscriptionNotified: StockSubs.markStockSubscriptionNotified,
+  listProductLabels: Labels.listProductLabels,
+  getProductLabelById: Labels.getProductLabelById,
+  createProductLabel: Labels.createProductLabel,
+  updateProductLabel: Labels.updateProductLabel,
+  deleteProductLabel: Labels.deleteProductLabel,
+  setProductLabels: Labels.setProductLabels,
 };

@@ -2,6 +2,7 @@ import {
   mockCampaigns,
   mockCategories,
   mockGallery,
+  mockProductLabels,
   mockProducts,
   mockSiteSettings,
 } from "@/lib/mock/data";
@@ -17,6 +18,7 @@ import type {
   SiteSettings,
   StockSubscription,
 } from "./types";
+import type { ProductLabel } from "@/types";
 
 // Seed offers for admin demo
 const seedOffers: Offer[] = [
@@ -164,6 +166,8 @@ export interface DemoStore {
   notifications: AdminNotification[];
   settings: SiteSettings;
   stockSubscriptions: StockSubscription[];
+  productLabels: ProductLabel[];
+  productLabelAssignments: Array<{ productId: string; labelId: string }>;
 }
 
 function freshStore(): DemoStore {
@@ -177,6 +181,12 @@ function freshStore(): DemoStore {
     notifications: structuredClone(seedNotifications),
     settings: structuredClone(mockSiteSettings) as SiteSettings,
     stockSubscriptions: structuredClone(seedStockSubscriptions),
+    productLabels: structuredClone(mockProductLabels) as ProductLabel[],
+    productLabelAssignments: [
+      { productId: "p-1", labelId: "label-yilbasi" },
+      { productId: "p-2", labelId: "label-yeni-sezon" },
+      { productId: "p-2", labelId: "label-sinirli-stok" },
+    ],
   };
 }
 

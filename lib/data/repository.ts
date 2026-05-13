@@ -11,14 +11,20 @@ import type {
   SiteSettings,
   StockSubscription,
 } from "./types";
+import type { ProductLabel, ProductLabelColor } from "@/types";
 
 export interface Repository {
   // Products
   listProducts(): Promise<Product[]>;
   getProductById(id: string): Promise<Product | null>;
   getProductBySlug(slug: string): Promise<Product | null>;
-  createProduct(data: Omit<Product, "id" | "createdAt">): Promise<Product>;
-  updateProduct(id: string, patch: Partial<Product>): Promise<Product>;
+  createProduct(
+    data: Omit<Product, "id" | "createdAt" | "customLabels"> & { customLabelIds?: string[] },
+  ): Promise<Product>;
+  updateProduct(
+    id: string,
+    data: Partial<Omit<Product, "id" | "createdAt" | "customLabels">> & { customLabelIds?: string[] },
+  ): Promise<Product>;
   deleteProduct(id: string): Promise<void>;
 
   // Categories
@@ -71,4 +77,15 @@ export interface Repository {
   ): Promise<StockSubscription>;
   deleteStockSubscription(id: string): Promise<void>;
   markStockSubscriptionNotified(id: string): Promise<void>;
+
+  // Product labels
+  listProductLabels(): Promise<ProductLabel[]>;
+  getProductLabelById(id: string): Promise<ProductLabel | null>;
+  createProductLabel(data: { name: string; color: ProductLabelColor }): Promise<ProductLabel>;
+  updateProductLabel(
+    id: string,
+    data: { name?: string; color?: ProductLabelColor },
+  ): Promise<ProductLabel>;
+  deleteProductLabel(id: string): Promise<void>;
+  setProductLabels(productId: string, labelIds: string[]): Promise<void>;
 }

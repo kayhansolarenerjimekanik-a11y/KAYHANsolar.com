@@ -1,10 +1,4 @@
-export type ProductLabelColor =
-  | "lime"
-  | "red"
-  | "yellow"
-  | "blue"
-  | "purple"
-  | "gray";
+import type { ProductLabelColor } from "@/types";
 
 const CLASSES: Record<ProductLabelColor, string> = {
   lime: "bg-lime-primary/95 text-black",
