@@ -12,7 +12,7 @@ import type {
   SiteSettings,
   StockSubscription,
 } from "./types";
-import type { CampaignRuleType, ProductBadge, ProductMedia } from "@/types";
+import type { CampaignRuleType, ProductMedia } from "@/types";
 
 // ===== Product =====
 export function rowToProduct(
@@ -35,7 +35,6 @@ export function rowToProduct(
     compareAtPrice: row.compare_at_price ? Number(row.compare_at_price) : undefined,
     stockQuantity: (row.stock_quantity as number | null) ?? 0,
     lowStockThreshold: (row.low_stock_threshold as number | null) ?? 3,
-    badges: (row.badges as ProductBadge[] | null) ?? [],
     isActive: (row.is_active as boolean | null) ?? true,
     isFeatured: (row.is_featured as boolean | null) ?? false,
     isNewArrival: (row.is_new_arrival as boolean | null) ?? false,
@@ -70,7 +69,6 @@ export function productToInsert(p: Omit<Product, "id" | "createdAt">) {
     compare_at_price: p.compareAtPrice ?? null,
     stock_quantity: p.stockQuantity,
     low_stock_threshold: p.lowStockThreshold,
-    badges: p.badges,
     is_active: p.isActive,
     is_featured: p.isFeatured,
     is_new_arrival: p.isNewArrival,

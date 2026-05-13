@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-const badgeEnum = z.enum([
-  "kargo_bedava",
-  "yeni",
-  "tercih_edilen",
-  "5_yil_garanti",
-  "10_yil_garanti",
-  "stokta_son",
-]);
-
 const mediaSchema = z.object({
   id: z.string().optional(),
   type: z.enum(["image", "video", "pdf"]),
@@ -37,7 +28,6 @@ export const productInputSchema = z.object({
   compareAtPrice: z.coerce.number().positive().optional(),
   stockQuantity: z.coerce.number().int().nonnegative(),
   lowStockThreshold: z.coerce.number().int().min(1).default(3),
-  badges: z.array(badgeEnum).default([]),
   isActive: z.coerce.boolean().default(true),
   isFeatured: z.coerce.boolean().default(false),
   isNewArrival: z.coerce.boolean().default(false),

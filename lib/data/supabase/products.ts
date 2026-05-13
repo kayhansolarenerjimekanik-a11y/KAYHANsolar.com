@@ -89,7 +89,6 @@ export async function updateProduct(id: string, patch: Partial<Product>): Promis
   if (patch.compareAtPrice !== undefined) update.compare_at_price = patch.compareAtPrice;
   if (patch.stockQuantity !== undefined) update.stock_quantity = patch.stockQuantity;
   if (patch.lowStockThreshold !== undefined) update.low_stock_threshold = patch.lowStockThreshold;
-  if (patch.badges !== undefined) update.badges = patch.badges;
   if (patch.isActive !== undefined) update.is_active = patch.isActive;
   if (patch.isFeatured !== undefined) update.is_featured = patch.isFeatured;
   if (patch.isNewArrival !== undefined) update.is_new_arrival = patch.isNewArrival;

@@ -52,7 +52,7 @@ const normalize = (s: string): string =>
 function matchesProduct(p: Product, terms: string[]): boolean {
   if (!p.isActive) return false;
   const haystack = normalize(
-    [p.name, p.shortDescription, p.brand, ...(p.badges ?? [])]
+    [p.name, p.shortDescription, p.brand]
       .filter(Boolean)
       .join(" "),
   );

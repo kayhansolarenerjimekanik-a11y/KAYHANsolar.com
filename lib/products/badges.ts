@@ -1,13 +1,14 @@
-import type { ProductBadge } from "@/types";
+import type { Product, ProductBadge } from "@/types";
 
-export interface BadgeSourceFields {
-  hasFreeShipping: boolean;
-  isFeatured: boolean;
-  isNewArrival: boolean;
-  stockQuantity: number;
-  lowStockThreshold: number;
-  warrantyYears: number | null;
-}
+export type BadgeSourceFields = Pick<
+  Product,
+  | "hasFreeShipping"
+  | "isFeatured"
+  | "isNewArrival"
+  | "stockQuantity"
+  | "lowStockThreshold"
+  | "warrantyYears"
+>;
 
 export function deriveBadges(p: BadgeSourceFields): ProductBadge[] {
   const out: ProductBadge[] = [];
