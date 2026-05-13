@@ -297,6 +297,11 @@ function NotifyWhenAvailable({
       <p className="text-xs text-muted">
         E-postanızı bırakın, stoğa girince size haber verelim.
       </p>
+      <Turnstile
+        siteKey={TURNSTILE_SITE_KEY}
+        onToken={(t) => setStockCaptchaToken(t)}
+        onExpire={() => setStockCaptchaToken(null)}
+      />
       <div className="flex flex-col gap-2 sm:flex-row">
         <div className="relative flex-1">
           <Mail
@@ -317,11 +322,6 @@ function NotifyWhenAvailable({
           {pending ? "Kaydediliyor..." : "Haber Ver"}
         </Button>
       </div>
-      <Turnstile
-        siteKey={TURNSTILE_SITE_KEY}
-        onToken={(t) => setStockCaptchaToken(t)}
-        onExpire={() => setStockCaptchaToken(null)}
-      />
       {error && <p className="text-xs text-danger">{error}</p>}
     </div>
   );
