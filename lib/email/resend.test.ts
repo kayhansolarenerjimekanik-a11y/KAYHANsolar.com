@@ -80,11 +80,12 @@ describe("sendOfferResponseEmail", () => {
     expect(sendMock).not.toHaveBeenCalled();
   });
 
-  it("short-circuits without calling Resend when RESEND_API_KEY is missing", async () => {
+  it("returns ok:false (truthful, not a silent success) when RESEND_API_KEY is missing", async () => {
     const { sendOfferResponseEmail } = await import("./resend");
     const offer = makeOffer({ email: "ali@example.com" });
     const result = await sendOfferResponseEmail(offer, "Yanıt");
-    expect(result.ok).toBe(true);
+    expect(result.ok).toBe(false);
+    expect(result.error).toBe("E-posta servisi yapılandırılmamış");
     expect(sendMock).not.toHaveBeenCalled();
   });
 
@@ -171,10 +172,11 @@ describe("sendOfferCreatedEmail", () => {
     expect(sendMock).not.toHaveBeenCalled();
   });
 
-  it("short-circuits without calling Resend when RESEND_API_KEY is missing", async () => {
+  it("returns ok:false (truthful, not a silent success) when RESEND_API_KEY is missing", async () => {
     const { sendOfferCreatedEmail } = await import("./resend");
     const result = await sendOfferCreatedEmail(makeOffer());
-    expect(result.ok).toBe(true);
+    expect(result.ok).toBe(false);
+    expect(result.error).toBe("E-posta servisi yapılandırılmamış");
     expect(sendMock).not.toHaveBeenCalled();
   });
 

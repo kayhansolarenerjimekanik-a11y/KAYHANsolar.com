@@ -103,10 +103,20 @@ describe("renderOfferResponseEmail — WhatsApp link", () => {
     }
   });
 
-  it("uses fallback phone when env var is missing", () => {
+  it("omits the WhatsApp CTA entirely when env var is missing", () => {
     const offer = makeOffer({ fullName: "Ali" });
     const html = renderOfferResponseEmail(offer, "Yanıt");
-    expect(html).toContain("https://wa.me/905555555555?text=");
+    expect(html).not.toContain("https://wa.me/");
+    expect(html).not.toContain("WhatsApp'tan İletişime Geç");
+    // Magaza CTA stays — only WhatsApp is conditional.
+    expect(html).toContain("/magaza");
+  });
+
+  it("omits the WhatsApp CTA when env var contains zero digits", () => {
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "+--() ";
+    const offer = makeOffer({ fullName: "Ali" });
+    const html = renderOfferResponseEmail(offer, "Yanıt");
+    expect(html).not.toContain("https://wa.me/");
   });
 
   it("strips non-digit chars from configured WhatsApp number", () => {
@@ -117,6 +127,7 @@ describe("renderOfferResponseEmail — WhatsApp link", () => {
   });
 
   it("URL-encodes the customer name in the wa.me link", () => {
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "905551234567";
     const offer = makeOffer({ fullName: "Ahmet Yılmaz" });
     const html = renderOfferResponseEmail(offer, "Yanıt");
     // 'Yılmaz' encodes non-ASCII; space becomes %20
@@ -124,6 +135,7 @@ describe("renderOfferResponseEmail — WhatsApp link", () => {
   });
 
   it("URL-encodes special characters that would break the link", () => {
+    process.env.NEXT_PUBLIC_WHATSAPP_NUMBER = "905551234567";
     const offer = makeOffer({ fullName: "Ali & Veli" });
     const html = renderOfferResponseEmail(offer, "Yanıt");
     // '&' must be percent-encoded in the query string
