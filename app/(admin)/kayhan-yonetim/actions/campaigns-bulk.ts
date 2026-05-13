@@ -32,7 +32,8 @@ export async function bulkSetCampaignActiveAction(
     try {
       await repo.updateCampaign(id, { isActive });
       succeeded += 1;
-    } catch {
+    } catch (err) {
+      console.error("[campaigns-bulk] updateCampaign failed", { id, isActive, err });
       failed += 1;
     }
   }
@@ -52,7 +53,8 @@ export async function bulkDeleteCampaignsAction(
     try {
       await repo.deleteCampaign(id);
       succeeded += 1;
-    } catch {
+    } catch (err) {
+      console.error("[campaigns-bulk] deleteCampaign failed", { id, err });
       failed += 1;
     }
   }

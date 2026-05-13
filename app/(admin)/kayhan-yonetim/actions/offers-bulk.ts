@@ -35,7 +35,8 @@ export async function bulkSetOfferStatusAction(
       }
       await repo.updateOffer(id, patch);
       succeeded += 1;
-    } catch {
+    } catch (err) {
+      console.error("[offers-bulk] updateOffer failed", { id, status, err });
       failed += 1;
     }
   }

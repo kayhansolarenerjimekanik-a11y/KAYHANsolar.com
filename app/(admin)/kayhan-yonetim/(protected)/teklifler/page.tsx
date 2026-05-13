@@ -12,11 +12,18 @@ interface Props {
   searchParams: Promise<{ status?: string; durum?: string }>;
 }
 
+// Eski ?status= linkleri ?durum='a yonlendirilir. Allowlist guvenlik gerekcesi:
+// rastgele/zararli deger redirect URL'ine inject edilmesin.
+const VALID_OFFER_STATUSES = new Set(["new", "in_review", "responded", "closed"]);
+
 export default async function AdminOffersPage({ searchParams }: Props) {
   const params = await searchParams;
-  // Geriye uyum: eski ?status=... linkleri ?durum=...'a yonlendir.
   if (params.status && !params.durum) {
-    redirect(`/kayhan-yonetim/teklifler?durum=${params.status}`);
+    const safe = VALID_OFFER_STATUSES.has(params.status) ? params.status : "";
+    const target = safe
+      ? `/kayhan-yonetim/teklifler?durum=${encodeURIComponent(safe)}`
+      : `/kayhan-yonetim/teklifler`;
+    redirect(target);
   }
 
   const offers = await repo.listOffers();

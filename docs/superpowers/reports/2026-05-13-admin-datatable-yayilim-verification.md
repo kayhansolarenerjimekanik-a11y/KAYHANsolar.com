@@ -146,3 +146,24 @@ c1fd4e5 feat(storage): Supabase Storage bucket'lari + RLS policy'leri  ⚠️ bk
 Plan tamamen uygulandı. 12 implementasyon task'ının hepsi spec'e uygun şekilde yazıldı, type ve lint kontrolleri her adımda temiz geçti, dev server hatasız başladı, tüm 5 admin sayfası (4 yeni + 1 pilot regresyon) HTTP 307 ile auth middleware'e ulaştı.
 
 Kalan iş kullanıcı manuel smoke testi (yukarıdaki checklist). Onay sonrası branch ana dala merge için hazır.
+
+---
+
+## Ek — 2026-05-13 Rebase + Code-Review P1 Fix
+
+Bağımsız code-review (orkestra şefi tarafından dağıtılan) iki noktayı ortaya çıkardı:
+
+**1) P0 — Stale base:** Branch eski main commit'inden (`238cbaf`) çıkıyordu. main bu süre içinde F-1 (Turnstile + web-push), F-6 (check:env + /api/health), product-badges-sot, custom-badges, admin-form-bug-fix, teklif-akisi-iyilestirme merge'lerini aldı. **Çözüm:** `git rebase origin/main` — sıfır çakışma, c1fd4e5 (storage buckets) zaten main'deydi atlandı, 14 commit yeniden uygulandı.
+
+**2) P1 — `?status=` redirect open-param injection (küçük risk):** `app/(admin)/kayhan-yonetim/(protected)/teklifler/page.tsx` redirect parametresini encode etmeden URL'e enjekte ediyordu. **Çözüm:** Allowlist (`VALID_OFFER_STATUSES`) + `encodeURIComponent`. Geçersiz değer fallback `/kayhan-yonetim/teklifler`.
+
+**3) P1 — Sessiz `catch {}` blokları:** 4 bulk action dosyasında (`orders-bulk`, `offers-bulk`, `campaigns-bulk`, `stock-subscriptions-bulk`) yakalanan hatalar log atmadan yutuluyordu — admin "neden başarısız?" sorusuna cevap göremiyordu. **Çözüm:** Her catch'e `console.error("[<area>] <method> failed", { id, ..., err })` eklendi.
+
+**Doğrulama (rebase + fix sonrası):**
+- `pnpm install` — node_modules güncellendi (web-push + @types/web-push + vitest devDep'leri main'den geldi)
+- `pnpm exec tsc --noEmit` — 0 hata
+- `pnpm lint` — 0 error, 1 pre-existing warning (product-lightbox ref/effect uyarısı, bu branch'in işi değil)
+- `pnpm vitest run` — 42/42 test PASS
+- `pnpm build` — main üzerinde başarılı geçti (bu worktree'de henüz koşulmadı, push öncesi koşulacak)
+
+Branch artık güvenle main'e merge edilebilir.

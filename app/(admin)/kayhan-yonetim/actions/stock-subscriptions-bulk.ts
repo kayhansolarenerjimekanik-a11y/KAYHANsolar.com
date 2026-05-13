@@ -29,7 +29,8 @@ export async function bulkMarkStockNotifiedAction(
     try {
       await repo.markStockSubscriptionNotified(id);
       succeeded += 1;
-    } catch {
+    } catch (err) {
+      console.error("[stock-subscriptions-bulk] markNotified failed", { id, err });
       failed += 1;
     }
   }
@@ -49,7 +50,8 @@ export async function bulkDeleteStockSubscriptionsAction(
     try {
       await repo.deleteStockSubscription(id);
       succeeded += 1;
-    } catch {
+    } catch (err) {
+      console.error("[stock-subscriptions-bulk] deleteSubscription failed", { id, err });
       failed += 1;
     }
   }

@@ -45,7 +45,8 @@ export async function bulkSetOrderStatusAction(
         console.error("[email] sendOrderStatusEmail failed", err);
       }
       succeeded += 1;
-    } catch {
+    } catch (err) {
+      console.error("[orders-bulk] updateOrderStatus failed", { id, status, err });
       failed += 1;
     }
   }
