@@ -51,6 +51,8 @@ function parseFormData(formData: FormData): ProductInput | { error: string; fiel
   raw.isFeatured = formData.get("isFeatured") === "on" || raw.isFeatured === "true";
   raw.isNewArrival =
     formData.get("isNewArrival") === "on" || raw.isNewArrival === "true";
+  raw.hasFreeShipping =
+    formData.get("hasFreeShipping") === "on" || raw.hasFreeShipping === "true";
 
   const parsed = productInputSchema.safeParse(raw);
   if (!parsed.success) {
