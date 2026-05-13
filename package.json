@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:env": "node scripts/check-env.mjs",
     "db:migrate": "tsx --env-file=.env.local scripts/apply-migrations.ts",
     "seed:ai": "tsx --env-file=.env.local scripts/seed-ai-knowledge.ts",
     "create:admin": "tsx --env-file=.env.local scripts/create-admin.ts",
