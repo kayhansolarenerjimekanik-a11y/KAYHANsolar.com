@@ -39,6 +39,13 @@ function parseFormData(formData: FormData): ProductInput | { error: string; fiel
       raw.technicalSpecs = {};
     }
   }
+  if (typeof raw.customLabelIds === "string") {
+    try {
+      raw.customLabelIds = JSON.parse(raw.customLabelIds as string);
+    } catch {
+      raw.customLabelIds = [];
+    }
+  }
   // Checkboxes only appear in formData when checked
   raw.isActive = formData.get("isActive") === "on" || raw.isActive === "true";
   raw.isFeatured = formData.get("isFeatured") === "on" || raw.isFeatured === "true";

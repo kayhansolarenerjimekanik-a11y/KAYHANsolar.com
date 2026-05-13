@@ -5,7 +5,10 @@ import { ProductForm } from "@/components/admin/product-form";
 import { repo } from "@/lib/data";
 
 export default async function NewProductPage() {
-  const categories = await repo.listCategories();
+  const [categories, allLabels] = await Promise.all([
+    repo.listCategories(),
+    repo.listProductLabels(),
+  ]);
   return (
     <div className="space-y-6">
       <header>
@@ -21,6 +24,7 @@ export default async function NewProductPage() {
       </header>
       <ProductForm
         categories={categories}
+        allLabels={allLabels}
         action={createProductAction}
         submitLabel="Ürünü Kaydet"
       />
