@@ -397,9 +397,8 @@ export function CartView({
           </div>
 
           <div className="rounded-2xl border border-dashed border-border bg-elevated p-4 text-xs text-muted">
-            <span className="font-semibold text-foreground">Demo modu:</span>{" "}
-            Sipariş bilgileriniz WhatsApp linki olarak hazırlanır, gerçek bir
-            ödeme alınmaz.
+            <span className="font-semibold text-foreground">Ödeme akışı:</span>{" "}
+            Sipariş onayı ve ödeme detayları WhatsApp üzerinden tamamlanır.
           </div>
         </div>
       </div>

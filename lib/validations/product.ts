@@ -27,7 +27,7 @@ export const productInputSchema = z.object({
   currentPrice: z.coerce.number().positive("Fiyat 0'dan büyük olmalı"),
   compareAtPrice: z.coerce.number().positive().optional(),
   stockQuantity: z.coerce.number().int().nonnegative(),
-  lowStockThreshold: z.coerce.number().int().min(1).default(3),
+  lowStockThreshold: z.coerce.number().int().min(0).default(3),
   isActive: z.coerce.boolean().default(true),
   isFeatured: z.coerce.boolean().default(false),
   isNewArrival: z.coerce.boolean().default(false),

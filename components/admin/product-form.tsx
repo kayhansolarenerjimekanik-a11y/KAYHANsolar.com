@@ -15,8 +15,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 import type { Category, Product } from "@/types";
 
-import { deriveBadges } from "@/lib/products/badges";
+import { productFieldLabel } from "@/lib/admin/field-labels";
 import { productBadgeLabels } from "@/lib/mock/data";
+import { deriveBadges } from "@/lib/products/badges";
 
 import type { ProductActionState } from "@/app/(admin)/kayhan-yonetim/actions/products";
 
@@ -305,6 +306,19 @@ export function ProductForm({ initial, categories, action, submitLabel }: Produc
           return previewBadges.map((b) => productBadgeLabels[b]).join(" · ");
         })()}
       </div>
+
+      {state.fieldErrors && Object.keys(state.fieldErrors).length > 0 && (
+        <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm">
+          <p className="font-semibold text-danger">Düzeltilmesi gereken alanlar:</p>
+          <ul className="mt-2 space-y-0.5 text-xs text-danger">
+            {Object.entries(state.fieldErrors).map(([field, msg]) => (
+              <li key={field}>
+                • <span className="font-medium">{productFieldLabel(field)}</span>: {msg}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {state.error && (
         <div className="rounded-xl border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
