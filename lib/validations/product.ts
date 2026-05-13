@@ -41,6 +41,11 @@ export const productInputSchema = z.object({
   isActive: z.coerce.boolean().default(true),
   isFeatured: z.coerce.boolean().default(false),
   isNewArrival: z.coerce.boolean().default(false),
+  hasFreeShipping: z.coerce.boolean().default(false),
+  warrantyYears: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? null : Number(v)),
+    z.union([z.literal(null), z.number().int().min(0).max(20)]),
+  ).default(null),
   media: z.array(mediaSchema).min(1, "En az 1 görsel ekleyin"),
 });
 

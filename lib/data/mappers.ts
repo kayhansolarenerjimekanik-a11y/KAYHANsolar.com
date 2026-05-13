@@ -39,6 +39,8 @@ export function rowToProduct(
     isActive: (row.is_active as boolean | null) ?? true,
     isFeatured: (row.is_featured as boolean | null) ?? false,
     isNewArrival: (row.is_new_arrival as boolean | null) ?? false,
+    hasFreeShipping: (row.has_free_shipping as boolean | null) ?? false,
+    warrantyYears: (row.warranty_years as number | null) ?? null,
     metaTitle: (row.meta_title as string | null) ?? undefined,
     metaDescription: (row.meta_description as string | null) ?? undefined,
     media: media.map((m): ProductMedia => ({
@@ -72,6 +74,8 @@ export function productToInsert(p: Omit<Product, "id" | "createdAt">) {
     is_active: p.isActive,
     is_featured: p.isFeatured,
     is_new_arrival: p.isNewArrival,
+    has_free_shipping: p.hasFreeShipping,
+    warranty_years: p.warrantyYears,
     meta_title: p.metaTitle ?? null,
     meta_description: p.metaDescription ?? null,
   };

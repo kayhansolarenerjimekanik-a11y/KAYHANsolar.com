@@ -49,6 +49,8 @@ export interface Product {
   isActive: boolean;
   isFeatured: boolean;
   isNewArrival: boolean;
+  hasFreeShipping: boolean;
+  warrantyYears: number | null;
   media: ProductMedia[];
   metaTitle?: string;
   metaDescription?: string;
