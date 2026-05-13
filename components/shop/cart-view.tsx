@@ -45,6 +45,7 @@ export function CartView({
             productId: i.productId,
             quantity: i.quantity,
             price: i.price,
+            hasFreeShipping: i.hasFreeShipping,
           })),
           productCategoryById,
           baseShippingCost: SHIPPING_COST,
