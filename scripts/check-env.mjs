@@ -41,6 +41,16 @@ const PLACEHOLDERS = new Set([
   "",
 ]);
 
+// Non-secret keys can be shown verbatim; everything else is masked to prevent
+// secret exposure if output is captured (CI logs, screen sharing, scrollback).
+const NON_SECRET_KEYS = new Set([
+  "AUTH_MODE",
+  "DATA_MODE",
+  "VAPID_SUBJECT",
+  "NEXT_PUBLIC_SITE_URL",
+  "NEXT_PUBLIC_SUPABASE_URL",
+]);
+
 const RUNBOOK_HINT = "Adımlar: docs/runbooks/faz-6-production-prep.md";
 
 function parseEnv(path) {
@@ -103,9 +113,9 @@ function main() {
         else placeholders += 1;
       }
       const valPreview = env[key]
-        ? env[key].length > 20
-          ? env[key].slice(0, 8) + "…" + env[key].slice(-4)
-          : env[key]
+        ? NON_SECRET_KEYS.has(key)
+          ? env[key]
+          : `[set, ${env[key].length} chars]`
         : C.dim("(eksik)");
       console.log(`  ${s.label}  ${key.padEnd(38)} ${C.dim(valPreview)}`);
     }
