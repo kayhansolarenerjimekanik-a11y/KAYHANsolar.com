@@ -2,6 +2,7 @@ import "server-only";
 
 import { repo } from "@/lib/data";
 import { sendStockBackEmail } from "@/lib/email/resend";
+import { sendWebPush, isServerPushEnabled } from "@/lib/web-push/server";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://kayhansolar.com";
 
@@ -28,6 +29,7 @@ export async function dispatchForProduct(productId: string): Promise<number> {
 
   const productUrl = `${SITE_URL}/urun/${product.slug}`;
 
+  const pushEnabled = isServerPushEnabled();
   for (const s of pending) {
     if (s.email) {
       try {
@@ -36,7 +38,21 @@ export async function dispatchForProduct(productId: string): Promise<number> {
         console.error("[notify] email send failed", err);
       }
     }
-    // Web push dispatch (when VAPID configured) — Faz 6.
+    if (pushEnabled && s.pushSubscriptionJson) {
+      try {
+        const result = await sendWebPush(s.pushSubscriptionJson, {
+          title: `${product.name} stoğa girdi`,
+          body: "Hemen incelemek için tıklayın.",
+          url: productUrl,
+        });
+        if (result.expired) {
+          await repo.deleteStockSubscription(s.id);
+          continue;
+        }
+      } catch (err) {
+        console.error("[notify] push send failed", err);
+      }
+    }
     await repo.markStockSubscriptionNotified(s.id);
   }
 
